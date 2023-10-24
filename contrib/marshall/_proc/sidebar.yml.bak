@@ -1,0 +1,6 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 01_datacube_tools.ipynb
+      - 02_access_setup.ipynb

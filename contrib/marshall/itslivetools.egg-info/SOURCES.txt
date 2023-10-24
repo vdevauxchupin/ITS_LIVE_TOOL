@@ -1,0 +1,15 @@
+LICENSE
+MANIFEST.in
+README.md
+settings.ini
+setup.py
+itslivetools/__init__.py
+itslivetools/_modidx.py
+itslivetools/core.py
+itslivetools.egg-info/PKG-INFO
+itslivetools.egg-info/SOURCES.txt
+itslivetools.egg-info/dependency_links.txt
+itslivetools.egg-info/entry_points.txt
+itslivetools.egg-info/not-zip-safe
+itslivetools.egg-info/requires.txt
+itslivetools.egg-info/top_level.txt

@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: itslivetools
+Version: 0.0.1
+Summary: package for working with itslive ice velocity data
+Home-page: https://github.com/e-marshall/itslivetools
+Author: Victor Deveaux-Chupin, Emma Marshall
+Author-email: emma.marshall@utah.edu
+License: Apache Software License 2.0
+Keywords: nbdev jupyter notebook python
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: License :: OSI Approved :: Apache Software License
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+License-File: LICENSE
+
+This file will be overwritten by `index.ipynb`

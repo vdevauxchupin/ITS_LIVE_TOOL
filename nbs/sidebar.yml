@@ -2,5 +2,10 @@ website:
   sidebar:
     contents:
       - index.ipynb
+      - 00_core.ipynb
       - 01_datacube_tools.ipynb
-      - 02_access_setup.ipynb
+      - 02_interactive.ipynb
+      - 03_inversion.ipynb
+      - 04_setup.ipynb
+      - 05_GPregression.ipynb
+      - 06_temporalbaseline_filter.ipynb

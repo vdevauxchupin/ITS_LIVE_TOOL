@@ -4,4 +4,4 @@
 __all__ = []
 
 # %% ../nbs/Untitled.ipynb 3
-from . import datacube_tools, setup, interactive
+from ITS_LIVE_Analysis import datacube_tools, setup, interactive

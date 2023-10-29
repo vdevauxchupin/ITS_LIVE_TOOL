@@ -27,6 +27,9 @@ from ipyleaflet import Map, WMSLayer, basemaps
 from ipywidgets import HTML
 from owslib.wms import WebMapService
 
+# %% ../nbs/03_inversion.ipynb 5
+from . import setup, interactive
+
 # %% ../nbs/03_inversion.ipynb 6
 urls = []
 

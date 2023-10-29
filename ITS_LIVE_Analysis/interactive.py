@@ -139,13 +139,26 @@ class Widget():
     def display(self):
         return VBox([self.map, self.coordinates_label, self.coordinates_output])
 
-# %% ../nbs/02_interactive.ipynb 7
+# %% ../nbs/02_interactive.ipynb 8
 def return_clicked_info(clicked_widget):
 
-    coord_ls = clicked_widget.added_coords
+    '''this function formats information from a user click on the Widget object. 
+    The output is a tuple with the form (coordinate list of clicked point, gpd.geodataframe with rgi info of clicked glacier, url of itslive zarr datacube covering clicked point
+    '''
+    num_glaciers = len(clicked_widget.added_coords)
+    print(len(clicked_widget.added_coords))
 
-    glaciers_gpdf = pd.concat([clicked_widget.added_glacier[i] for i in range(len(clicked_widget.added_glacier))])
+    if num_glaciers > 0:
+    
+        coord_ls = clicked_widget.added_coords
+    
+        glaciers_gpdf = pd.concat([clicked_widget.added_glacier[i] for i in range(len(clicked_widget.added_glacier))])
+    
+        urls = list(set(clicked_widget.urls))
+    
+        return (coord_ls, glaciers_gpdf, urls)
+    else: 
+        print('no selection has been made')
+        str = 'The map needs to be clicked for the appropriate object to be created'
 
-    urls = list(set(clicked_widget.urls))
-
-    return (coord_ls, glaciers_gpdf, urls)
+        return str

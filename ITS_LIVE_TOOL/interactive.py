@@ -146,7 +146,7 @@ def return_clicked_info(clicked_widget):
     The output is a tuple with the form (coordinate list of clicked point, gpd.geodataframe with rgi info of clicked glacier, url of itslive zarr datacube covering clicked point
     '''
     num_glaciers = len(clicked_widget.added_coords)
-    print(len(clicked_widget.added_coords))
+    #print(len(clicked_widget.added_coords))
     gpdf_ls = []
     if num_glaciers > 0:
     

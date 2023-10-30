@@ -147,16 +147,17 @@ def return_clicked_info(clicked_widget):
     '''
     num_glaciers = len(clicked_widget.added_coords)
     print(len(clicked_widget.added_coords))
-
+    gpdf_ls = []
     if num_glaciers > 0:
     
         coord_ls = clicked_widget.added_coords
-    
-        glaciers_gpdf = pd.concat([clicked_widget.added_glacier[i] for i in range(len(clicked_widget.added_glacier))])
+
+        gpdf_ls.append(clicked_widget.added_glacier)
+        #glaciers_gpdf = pd.concat([clicked_widget.added_glacier[i] for i in range(len(clicked_widget.added_glacier))])
     
         urls = list(set(clicked_widget.urls))
     
-        return (coord_ls, glaciers_gpdf, urls)
+        return (coord_ls, gpdf_ls, urls)
     else: 
         print('no selection has been made')
         str = 'The map needs to be clicked for the appropriate object to be created'

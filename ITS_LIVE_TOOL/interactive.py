@@ -160,6 +160,6 @@ def return_clicked_info(clicked_widget):
         return (coord_ls, gpdf_ls, urls)
     else: 
         print('no selection has been made')
-        str = 'The map needs to be clicked for the appropriate object to be created'
+        #str = 'The map needs to be clicked for the appropriate object to be created'
 
-        return str
+        pass

@@ -4,7 +4,7 @@
 __all__ = []
 
 # %% ../nbs/05_GPregression.ipynb 3
-from . import datacube_tools, setup
+from . import datacube_tools, setup, interactive
 
 # %% ../nbs/05_GPregression.ipynb 4
 import os
@@ -17,3 +17,10 @@ from sklearn.model_selection import GridSearchCV
 #from skopt import BayesSearchCV
 #from skopt.space import Real, Categorical, Integer
 #from sklearn.pipeline import Pipeline
+
+# %% ../nbs/05_GPregression.ipynb 7
+try:
+    coords, gpdf, urls = interactive.return_clicked_info(data_map)
+    point = [coords[0][1], coords[0][0]]
+except:
+    pass

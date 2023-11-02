@@ -146,7 +146,7 @@ def return_clicked_info(clicked_widget):
     The output is a tuple with the form (coordinate list of clicked point, gpd.geodataframe with rgi info of clicked glacier, url of itslive zarr datacube covering clicked point
     '''
     num_glaciers = len(clicked_widget.added_coords)
-    print(len(clicked_widget.added_coords))
+    #print(len(clicked_widget.added_coords))
     gpdf_ls = []
     if num_glaciers > 0:
     
@@ -160,6 +160,6 @@ def return_clicked_info(clicked_widget):
         return (coord_ls, gpdf_ls, urls)
     else: 
         print('no selection has been made')
-        str = 'The map needs to be clicked for the appropriate object to be created'
+        #str = 'The map needs to be clicked for the appropriate object to be created'
 
-        return str
+        pass

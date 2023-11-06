@@ -31,8 +31,8 @@ import matplotlib as mpl
 import hvplot.pandas
 import hvplot.xarray
 
-import geoviews as gv
-import geoviews.feature as gf
+#import geoviews as gv
+#import geoviews.feature as gf
 #import ipywidgets as ipw
 import panel as pn
 
@@ -65,7 +65,8 @@ import re
 import tarfile
 import geopandas as gpd
 import os
-
+from owslib.wfs import WebFeatureService
+from requests import Request
 
 logging.basicConfig(level=logging.ERROR)
 # import pandas as pd
@@ -74,12 +75,12 @@ logging.basicConfig(level=logging.ERROR)
 from . import datacube_tools, interactive
 
 # %% ../nbs/04_setup.ipynb 6
-from oggm import cfg, utils, graphics
-import skimage.draw as skdraw
+#from oggm import cfg, utils, graphics
+#import skimage.draw as skdraw
 
-from oggm import workflow, tasks
-from oggm import DEFAULT_BASE_URL
-from oggm.shop import its_live, rgitopo, bedtopo
+#from oggm import workflow, tasks
+#from oggm import DEFAULT_BASE_URL
+#from oggm.shop import its_live, rgitopo, bedtopo
 
 # %% ../nbs/04_setup.ipynb 9
 def point_to_gdf(point_ls):
@@ -182,18 +183,21 @@ class Glacier():
         self.name = name
         self.rgi_id = rgi_id
         self.rgi_region = rgi_id.split('-')[1].split('.')[0]
-        self.data_url = 'https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L1-L2_files/centerlines/'
-        self.working_dir_path = working_dir_path
+        self.outline = self._download_rgi()
+        self.utm_zone = self.centerline_main.estimate_utm_crs()
+
+        #self.data_url = 'https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L1-L2_files/centerlines/'
+        #self.working_dir_path = working_dir_path
         #self.centerline_path = centerline_path
-        self.g = self._oggm_setup()
-        self.utm_crs = utm_crs
+        #self.g = self._oggm_setup()
+        #self.utm_crs = utm_crs
         self.centerlines = gpd.read_file(self._download_centerlines()).loc[gpd.read_file(self._download_centerlines())['RGIID'] == self.rgi_id]
         self.centerline_main = self.centerlines.loc[self.centerlines['MAIN'] == 1]
-        prod = self._add_oggm_gridded_data()
-        self.gridded_data = prod[0]
-        self.outline = prod[1]
-        self.utm_gridded_data = self._reproject_vars()
-        self.centerline_gridded_data = self._oggm_gridded_clip2centerline()
+        #prod = self._add_oggm_gridded_data()
+        #self.gridded_data = prod[0]
+        #self.outline = prod[1]
+        #self.utm_gridded_data = self._reproject_vars()
+        #self.centerline_gridded_data = self._oggm_gridded_clip2centerline()
         #self.image_pair_centerline = self.add_image_pair_timeseries()
         
     def _oggm_setup(self, prepro_level = 2):
@@ -223,7 +227,35 @@ class Glacier():
         cl = gpd.read_file(self.centerline_path)
         cl = cl.loc[cl['RGIID'] == self.rgi_id]
         return cl 
+        
+    def _download_rgi(self):
 
+        region = self.rgi_region
+    
+        rgi_region_dict = {'01': 'GLIMS:RGI_Alaska', '02':  'GLIMS:RGI_WesternCanadaUS', '03':  'GLIMS:RGI_ArcticCanadaNorth',
+                       '04': 'GLIMS:RGI_ArcticCanadaSouth', '05':  'GLIMS:RGI_GreenlandPeriphery', '06': 'GLIMS:RGI_Iceland',
+                       '07':  'GLIMS:RGI_Svalbard', '08':  'GLIMS:RGI_Scandinavia', '09': 'GLIMS:RGI_RussianArctic', 
+                       '10': 'GLIMS:RGI_NorthAsia', '11':  'GLIMS:RGI_CentralEurope', '12':  'GLIMS:RGI_CaucasusMiddleEast',
+                       '13':   'GLIMS:RGI_CentralAsia', '14': 'GLIMS:RGI_SouthAsiaWest', '15': 'GLIMS:RGI_SouthAsiaEast',
+                       '16':  'GLIMS:RGI_LowLatitudes', '17': 'GLIMS:RGI_SouthernAndes', '18': 'GLIMS:RGI_NewZealand',
+                       '19':  'GLIMS:RGI_AntarcticSubantarctic'}
+    
+        rgi_region_name = rgi_region_dict[region]
+    
+        rgi_url = "https://www.glims.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+       
+        wfs = WebFeatureService(url=rgi_url,  version = "2.0.0")
+        
+        layers = list(wfs.contents)
+    
+        layer = [layers[i] for i in range(len(layers)) if layers[i] == rgi_region_name][0]
+        print(layer)
+        response = wfs.getfeature(typename = layer, outputFormat='SHAPE-ZIP')
+        data = gpd.read_file(response)
+    
+        data_glacier = data.loc[data['RGIID'] == self.rgi_id]
+        
+        return data_glacier
     
     def _download_centerlines(self, dest_folder = os.getcwd()):
         
@@ -517,11 +549,11 @@ def create_glacier_point_objs(name, coords, gpdf, wd_path, point_label, var_ls):
     epsg = gpdf[0][0].estimate_utm_crs()
     glacier = Glacier(name, rgi_id, wd_path, epsg)
 
-    point = Glacier_Point(name, point_label, rgi_id, glacier, point, epsg, var_ls)
-    return glacier, point
+    #point = Glacier_Point(name, point_label, rgi_id, glacier, point, epsg, var_ls)
+    return glacier
 
 # %% ../nbs/04_setup.ipynb 21
 try:
-    baltoro, mid_point = create_glacier_point_objs('baltoro', coords, gpdf, wd_path, 'mid_point', var_ls)
+    baltoro = create_glacier_point_objs('baltoro', coords, gpdf, wd_path, 'mid_point', var_ls)
 except:
     pass

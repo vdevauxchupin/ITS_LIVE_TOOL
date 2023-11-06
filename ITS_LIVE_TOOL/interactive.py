@@ -23,11 +23,13 @@ from ipyleaflet import WMSLayer
 import ipywidgets as ipyw
 import json
 import pandas as pd
-from ipyleaflet import Map, WMSLayer, basemaps
+from ipyleaflet import Map, WMSLayer, basemaps, GeoData
 from ipywidgets import HTML
 from owslib.wms import WebMapService
 import ipywidgets as widgets
 from ipywidgets import Label, VBox
+from owslib.wfs import WebFeatureService
+from requests import Request
 
 # %% ../nbs/02_interactive.ipynb 4
 class Widget():
@@ -47,7 +49,7 @@ class Widget():
         self.map.wms_layer = self.map.add(self.wms_layer)
         self.geojson_layer.on_click(self._json_handler)
         self.geojson_layer.on_hover(self._hover_handler)
-        self.added_glacier =  [] 
+        self.added_glaciers =  []
         self.urls = []
         self.added_coords = []
         self.added_urls = []
@@ -123,7 +125,9 @@ class Widget():
             #self.added_glacier.append(df)
             print(f"You have selected the glacier {df['NAME'].values[0]}, ID: {df['RGIID'].values[0]} ")
             #gdf_list.append(df)
-            self.added_glacier.append(df)
+            self.added_glaciers.append(df)
+            #print(len(self.added_glacier))
+
 
             #return gdf_list
             
@@ -152,14 +156,24 @@ def return_clicked_info(clicked_widget):
     
         coord_ls = clicked_widget.added_coords
 
-        gpdf_ls.append(clicked_widget.added_glacier)
+        gpdf_ls.append(clicked_widget.added_glaciers)
+        unique_values, unique_indices = np.unique(np.array([gpdf_ls[0][i]['RGIID'] for i in range(len(gpdf_ls[0]))]), return_index=True)
+        #adding victors code here
+        #changing obj name -- new object will be gdf_list
+        gdf_list = [gpdf_ls[0][i] for i in unique_indices]
+        #gpdf = pd.concat(gpdf_ls).drop_duplicates(subset='RGIID')
+        #adding victors code here
+        #changing obj name -- new object will be gdf_list
+       
+        print(f'You have {len(gdf_list)} glaciers selected')
+    
         #glaciers_gpdf = pd.concat([clicked_widget.added_glacier[i] for i in range(len(clicked_widget.added_glacier))])
     
         urls = list(set(clicked_widget.urls))
     
-        return (coord_ls, gpdf_ls, urls)
+        return (coord_ls, gdf_list, urls)
     else: 
-        print('no selection has been made')
+        print('Select a datacube to fetch the data!!')
         #str = 'The map needs to be clicked for the appropriate object to be created'
 
         pass

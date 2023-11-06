@@ -23,7 +23,7 @@ from ipyleaflet import WMSLayer
 import ipywidgets as ipyw
 import json
 import pandas as pd
-from ipyleaflet import Map, WMSLayer, basemaps
+from ipyleaflet import Map, WMSLayer, basemaps, GeoData
 from ipywidgets import HTML
 from owslib.wms import WebMapService
 
@@ -36,19 +36,19 @@ urls = []
 # %% ../nbs/03_inversion.ipynb 7
 data_map = interactive.Widget()
 
-# %% ../nbs/03_inversion.ipynb 9
+# %% ../nbs/03_inversion.ipynb 10
 try: 
-    coords, gpdf, urls = interactive.return_clicked_info(data_map)
+    coords, gpdf, itslive_urls = interactive.return_clicked_info(data_map)
 except:
     pass
 
-# %% ../nbs/03_inversion.ipynb 13
+# %% ../nbs/03_inversion.ipynb 15
 try: 
     gpdf_ls = gpdf[0]
 except:
     pass
 
-# %% ../nbs/03_inversion.ipynb 14
+# %% ../nbs/03_inversion.ipynb 16
 def make_input_dict(coords, gpdf, urls):
     
     mod_urls = [re.sub(r'http', 's3', url) for url in urls]
@@ -60,30 +60,27 @@ def make_input_dict(coords, gpdf, urls):
         }
     return d
 
-# %% ../nbs/03_inversion.ipynb 15
+# %% ../nbs/03_inversion.ipynb 17
 try:
-    d = make_input_dict(coords, gpdf, URLs)
+    d = make_input_dict(coords, gpdf_ls, itslive_urls)
     urls = d['urls']
 except:
     print(' no input data specified, have you made a map selection?')
 
-# %% ../nbs/03_inversion.ipynb 16
+# %% ../nbs/03_inversion.ipynb 18
 def create_data_dict(urls):
-    # Modify the urls so they can be opened by zarr (replace 'http' by 's3' and delete '.s3.amazonaws.com')
-    mod_urls = [re.sub(r'http', 's3', url) for url in urls]
-    mod_urls = [re.sub(r'\.s3\.amazonaws\.com', '', url) for url in urls]
-    
-    # Create storing arrays for the coordinates on-glacier
+
+    #create storign arrays for the coordinates on-glacier
     X_valid = []
     Y_valid = []
     X_tot = []
     Y_tot = []
-    
-    # Create an empty directoryimport pickle to hold many variables all tied to the datacubes
+
+    #crate an empty dictionary to hold many variables all tied to the datacube
     data_dict = {}
-    
-    # We iterate through the different datacubes so they can each have one instance of the variables below
-    for url in mod_urls:
+
+    #iterate through different datacubes so they can each have one instance of the variables blow
+    for url in urls:
         zarr_store = None # To store the datacube's information and access its variables
         dates = None # To store the dates at which the inversion will give values
         A_m = None # 1st part of the design matrix
@@ -93,11 +90,13 @@ def create_data_dict(urls):
         inds_mission = None # Indices representing the sorted dates per mission chosen
         ind_tot = None # Indices representing the indices of the pixels on the GOI
         valid_idx = None # Easting and Northing values of the indices above
-        
+        proj_cube = None # Projection of the datacube
+        mask_dates = None # Mask that filters out dates outside of desired date range
+
         # Create a dictionary entry for the URL with the desired subsets
-        data_dict[url] = {
+        data_dict[mod_urls] = {
             'zarr_store': zarr_store,
-            'dates': dates,
+            'dates_noinv': dates,
             'A_m': A_m,
             'reg_mat_Inv': reg_mat_Inv,
             'mission': mission,
@@ -105,13 +104,14 @@ def create_data_dict(urls):
             'inds_mission': inds_mission,
             'dates': dates,
             'ind_tot': ind_tot,
-            'valid_idx': valid_idx
+            'valid_idx': valid_idx,
+            'proj_cube': proj_cube,
+            'mask_dates': mask_dates
         }
-
+        
     return data_dict, X_valid, Y_valid, X_tot, Y_tot
 
-
-# %% ../nbs/03_inversion.ipynb 17
+# %% ../nbs/03_inversion.ipynb 19
 def get_extents(url, gpdf, X_tot, Y_tot, X_valid, Y_valid, data_dict):# mission, lamb, derivative, day_interval):
     
     #url = input_data_dict['urls'].iloc[0]
@@ -124,7 +124,7 @@ def get_extents(url, gpdf, X_tot, Y_tot, X_valid, Y_valid, data_dict):# mission,
     data_dict[url]['zarr_store'] = store
 
     # Get the cube's projection
-    proj_cube = store.attrs['projection']
+    proj_cube = int(store.attrs['projection'])
 
     # Load X and Y of the dataset
     X = store['x'][:]
@@ -143,7 +143,7 @@ def get_extents(url, gpdf, X_tot, Y_tot, X_valid, Y_valid, data_dict):# mission,
     idx_valid = []
     
     for b in range(len(gpdf)):
-        mpath = mplp.Path(list(gpdf[b]['geometry'].to_crs(proj_cube).boundary.explode(index_parts = True).iloc[0].coords))
+        mpath = mplp.Path(list(gpdf[b]['geometry'].to_crs(np.int(proj_cube)).boundary.explode(index_parts = True).iloc[0].coords))
         glacier_mask = mpath.contains_points(points).reshape(Xs.shape)
         # Grab the indices of the points inside the glacier
         idx_valid.append(np.array(np.where(glacier_mask==True)))
@@ -152,14 +152,17 @@ def get_extents(url, gpdf, X_tot, Y_tot, X_valid, Y_valid, data_dict):# mission,
     # Store the valid indices
     data_dict[url]['valid_idx'] = idx_valid
     
+    # Store the cube projection
+    data_dict[url]['proj_cube'] = proj_cube
+    
     # Store the coordinates of the valid Xs and Ys
     X_valid.append([Xs[idx_valid[0][i], idx_valid[1][i]] for i in range(len(idx_valid[0]))])
     Y_valid.append([Ys[idx_valid[0][i], idx_valid[1][i]] for i in range(len(idx_valid[0]))])
     
     return X_tot, Y_tot, X_valid, Y_valid
 
-# %% ../nbs/03_inversion.ipynb 18
-def design_matrices(url, mission, lamb, derivative, day_interval):
+# %% ../nbs/03_inversion.ipynb 20
+def design_matrices(url, mission, lamb, derivative, day_interval, sdate, edate):
 
     # If you passed 'mission' as an argument, it grabs the appropriate values
     if mission:
@@ -185,13 +188,32 @@ def design_matrices(url, mission, lamb, derivative, day_interval):
     im1 = im1[index_sort]
     im2 = im2[index_sort]
 
+    # If sdate is later than the first available date, we find its corresponding index
+    try:
+        sdate_ind = np.where(mid_dates >= sdate)[0][0]
+    except:
+        sdate_ind = 0
+    
+    # If edate is sooner than the last available date, we find its corresponding index
+    try:
+        edate_ind = np.where(mid_dates > edate)[0][0]
+    except:
+        edate_ind = None
+    
+    # Create a False/True mask where True if the date is in the desired range
+    mask_dates = np.full(mid_dates.shape, False)
+    mask_dates[sdate_ind:edate_ind] = True
+
+    # Keep only the values within the desired range
+    mid_dates = mid_dates[mask_dates]
+    im1 = im1[mask_dates]
+    im2 = im2[mask_dates]
 
     # Check which im is the smallest (first image, it changes depending on ITS_LIVE's version)
     if im2[0] < im1[0]:
         temp = im1
         im1 = im2
         im2 = temp
-
 
     # Create the date array with the new interval dates
     dates_nonum = np.arange(mid_dates[0], mid_dates[-1], timedelta(days=day_interval)).astype(np.datetime64)
@@ -246,14 +268,17 @@ def design_matrices(url, mission, lamb, derivative, day_interval):
     data_dict[urls[url]]['index_sort'] = index_sort
     data_dict[urls[url]]['inds_mission'] = inds_mission
     data_dict[urls[url]]['dates'] = dates_nonum
+    data_dict[urls[url]]['dates_noinv'] = mid_dates
+    data_dict[urls[url]]['mask_dates']= mask_dates
             
     return data_dict
 
-# %% ../nbs/03_inversion.ipynb 19
+# %% ../nbs/03_inversion.ipynb 21
 def Inv_reg(vObs, data, fillvalue):
- 
+    
     # Grab observed velocities
     vObs = vObs[data['index_sort']]
+    vObs = vObs[data['mask_dates']]
     
     # Filter out the missions we don't want
     if mission:
@@ -273,10 +298,12 @@ def Inv_reg(vObs, data, fillvalue):
     
     # Invert the velocities
     vInv = np.linalg.solve(A_des.T@A_des,A_des.T@vObs_masked)
+    #vInv = scipy.linalg.solve(A_des.T@A_des,A_des.T@vObs_masked, lower = False, check_finite=False, assume_a='gen')
     
     return vInv
 
-# %% ../nbs/03_inversion.ipynb 20
+
+# %% ../nbs/03_inversion.ipynb 22
 try:
     data_dict, X_valid, Y_valid, X_tot, Y_tot = create_data_dict(urls)
 
@@ -287,6 +314,9 @@ try:
     lamb = 10 # Smoothing coefficient: the higher the value, the more the inversion favors a smooth output. BAD for surging glaciers, GOOD for non-surging glaciers
     derivative = 2 # Derivative degree for the inversion. Doesn't change much unless you have a specific reasong to choose 1 or 2 (1st or 2nd derivative)
     day_interval = 12 # Amount of days in between each inversion value. The higher, the faster the inversion. But you also lose in temporal resolution. 12 here because Sentinel-1 repeat-time is 12.
+    sdate = None # Start date, format 'YYYY-MM-DD' OR None if you want to grab the entire timeseries available
+    edate = None # End date, format 'YYYY-MM-DD' OR None if you want to grab the entire timeseries available
+    GPU = True # None if you want to run it on CPU
 
     # Create Eastings and Northings arrays based on the Eastings and Northings of the datacubes
     X_arr = np.unique(np.hstack(X_tot))
@@ -309,7 +339,7 @@ try:
 except:
     pass
 
-# %% ../nbs/03_inversion.ipynb 22
+# %% ../nbs/03_inversion.ipynb 24
 try:
 
     for i in tqdm(range(len(urls))):
@@ -317,7 +347,7 @@ try:
 except:
     pass
 
-# %% ../nbs/03_inversion.ipynb 24
+# %% ../nbs/03_inversion.ipynb 26
 try:
     # Get the total amount of temporal steps
     ind_tot = []
@@ -331,8 +361,133 @@ try:
 except:
     pass
 
-# %% ../nbs/03_inversion.ipynb 26
-try: 
+# %% ../nbs/03_inversion.ipynb 28
+if GPU:
+
+    import torch
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    '''
+    # Migrate to torch & GPU
+    for c in range(len(urls)):
+        data_dict[urls[c]]['A_m'] = torch.from_numpy(data_dict[urls[c]]['A_m']).to(device)
+        data_dict[urls[c]]['reg_mat_Inv'] = torch.from_numpy(data_dict[urls[c]]['reg_mat_Inv']).to(device)
+    '''
+    
+    def Inv_reg_torch(vObs, data, fillvalue, device):
+     
+        # Grab observed velocities
+        vObs = vObs[data['index_sort']]
+        vObs = vObs[data['mask_dates']]
+        
+        # Filter out the missions we don't want
+        if mission:
+            vObs = vObs[data['inds_mission']]  
+        
+        # Mask the NaNs so we don't compute the inversion for empty rows
+        mask = np.logical_not(np.equal(vObs, fillvalue))
+        
+        # Create a masked velocity vector
+        vObs_masked = torch.from_numpy(vObs[mask])
+        
+        # Append regularization terms to dObs
+        vObs_masked= torch.hstack((vObs_masked, torch.zeros((data['reg_mat_Inv'].shape[0])))).to(device)
+         
+        # Assemble the design matrix
+        A_des = torch.vstack((data['A_m'][mask], data['reg_mat_Inv']))
+        
+        # Invert the velocities
+        vInv = torch.linalg.solve(A_des.T@A_des,A_des.T@vObs_masked.double())
+        
+        return vInv
+    
+    vxInv = torch.zeros((len(ind_tot), template.shape[0], template.shape[1])).double().to(device)
+    vyInv = torch.zeros((vxInv.shape)).double().to(device)
+    
+    # Define the total number of iterations
+    total_iterations = len(y_matches)
+    
+    # Create a tqdm object with dynamic_ncols=False to suppress intermediate updates
+    # Create a tqdm object with a larger mininterval to suppress intermediate updates
+    progress_bar = tqdm(total=total_iterations, dynamic_ncols=False, mininterval=1.0)
+    
+    
+    i = 0
+    for c in range(len(urls)):
+        valid_idx = data_dict[urls[c]]['valid_idx']
+        fillvx = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][0], valid_idx[1][0]].min() #data_dict[urls[c]]['zarr_store']['vx'].fill_value   fill_value is wrong in the new ITS_LIVE version
+        fillvy = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][0], valid_idx[1][0]].min() #data_dict[urls[c]]['zarr_store']['vy'].fill_value
+    
+        for V in range(len(valid_idx[0])):
+            vxObs = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][V], valid_idx[1][V]]
+            vyObs = data_dict[urls[c]]['zarr_store']['vy'][:, valid_idx[0][V], valid_idx[1][V]]
+            vxInv[data_dict[urls[c]]['ind_tot'], y_matches[i], x_matches[i]] = Inv_reg_torch(vxObs, data_dict[urls[c]], fillvx, device)
+            vyInv[data_dict[urls[c]]['ind_tot'], y_matches[i], x_matches[i]] = Inv_reg_torch(vyObs, data_dict[urls[c]], fillvy, device)
+            
+            i += 1
+            progress_bar.update(1)  # Update the progress bar
+
+            if i%100 == 0:
+                with open("Counter.txt", "w") as text_file:
+                    text_file.write(f"Counter: {i}")
+            
+            if i%5000 == 0:
+                
+                print(f"Saved at {i}")
+                # Get the names of all the glaciers in the datacube 
+                #glac_names = np.hstack(np.array([glacier.id.values[0] for glacier in gdf_list]))
+                #glac_names = '-'.join(glac_names)
+
+                # Gather the projection of the cube
+                #glac_proj = str(np.unique(np.hstack([data_dict[urls[i]]['proj_cube'] for i in range(len(urls))]))[0])
+
+                # Create a new dataset with vx and vy, using attributes from 'ds'
+                new_ds = xr.Dataset(
+                    {
+                        "vx": (["time", "y", "x"], vxInv.cpu().numpy()),
+                        "vy": (["time", "y", "x"], vyInv.cpu().numpy()),
+                    },
+                    coords={
+                        "time": ind_tot,
+                        "x": X_arr[x_min-1:x_max+1],
+                        "y": Y_arr[y_min-1:y_max+1],
+                    },
+                    attrs=data_dict[urls[0]]['zarr_store'].attrs,
+                ).chunk({'time': 1, 'x': 100, 'y': 100})
+
+                from dask.diagnostics import ProgressBar
+                write_job = new_ds.to_netcdf(f'Inverted_Cube.nc', compute=False)
+                with ProgressBar():
+                    print(f"Writing to {'Inverted_Cube.nc'}")
+                    write_job.compute()
+    
+    # Close the progress bar
+    progress_bar.close()
+
+    # Save the dataset
+    new_ds = xr.Dataset(
+        {
+            "vx": (["time", "y", "x"], vxInv.cpu().numpy()),
+            "vy": (["time", "y", "x"], vyInv.cpu().numpy()),
+        },
+        coords={
+            "time": ind_tot,
+            "x": X_arr[x_min-1:x_max+1],
+            "y": Y_arr[y_min-1:y_max+1],
+        },
+        attrs=data_dict[urls[0]]['zarr_store'].attrs,
+    ).chunk({'time': 1, 'x': 100, 'y': 100})
+    
+    from dask.diagnostics import ProgressBar
+    write_job = new_ds.to_netcdf(f'VelInv.nc', compute=False)
+    with ProgressBar():
+        print(f"Writing to {'VelInv.nc'}")
+        write_job.compute()
+
+
+
+else:
+    
     vxInv = np.zeros((len(ind_tot), template.shape[0], template.shape[1]))
     vyInv = np.zeros((vxInv.shape))
     
@@ -347,8 +502,8 @@ try:
     i = 0
     for c in range(len(urls)):
         valid_idx = data_dict[urls[c]]['valid_idx']
-        fillvx = data_dict[urls[c]]['zarr_store']['vx'].fill_value
-        fillvy = data_dict[urls[c]]['zarr_store']['vy'].fill_value
+        fillvx = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][0], valid_idx[1][0]].min() #data_dict[urls[c]]['zarr_store']['vx'].fill_value   fill_value is wrong in the new ITS_LIVE version
+        fillvy = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][0], valid_idx[1][0]].min() #data_dict[urls[c]]['zarr_store']['vy'].fill_value
         
         for V in range(len(valid_idx[0])):
             vxObs = data_dict[urls[c]]['zarr_store']['vx'][:, valid_idx[0][V], valid_idx[1][V]]
@@ -357,14 +512,65 @@ try:
             vyInv[data_dict[urls[c]]['ind_tot'], y_matches[i], x_matches[i]] = Inv_reg(vyObs, data_dict[urls[c]], fillvy)
             
             i += 1
+            if i%100 == 0:
+                with open("Counter.txt", "w") as text_file:
+                    text_file.write(f"Counter: {i}")
+            
+            if i%10000 == 0:
+                
+                print(f"Saved at {i}")
+                # Get the names of all the glaciers in the datacube 
+                #glac_names = np.hstack(np.array([glacier.id.values[0] for glacier in gdf_list]))
+                #glac_names = '-'.join(glac_names)
+
+                # Gather the projection of the cube
+                #glac_proj = str(np.unique(np.hstack([data_dict[urls[i]]['proj_cube'] for i in range(len(urls))]))[0])
+
+                # Create a new dataset with vx and vy, using attributes from 'ds'
+                new_ds = xr.Dataset(
+                    {
+                        "vx": (["time", "y", "x"], vxInv),
+                        "vy": (["time", "y", "x"], vyInv),
+                    },
+                    coords={
+                        "time": ind_tot,
+                        "x": X_arr[x_min-1:x_max+1],
+                        "y": Y_arr[y_min-1:y_max+1],
+                    },
+                    attrs=data_dict[urls[0]]['zarr_store'].attrs,
+                ).chunk({'time': 1, 'x': 100, 'y': 100})
+
+                from dask.diagnostics import ProgressBar
+                write_job = new_ds.to_netcdf(f'Inverted_Cube.nc', compute=False)
+                with ProgressBar():
+                    print(f"Writing to {'Inverted_Cube.nc'}")
+                    write_job.compute()
             progress_bar.update(1)  # Update the progress bar
     
     # Close the progress bar
     progress_bar.close()
-except:
-    pass
 
-# %% ../nbs/03_inversion.ipynb 28
+    # Save the dataset
+    new_ds = xr.Dataset(
+        {
+            "vx": (["time", "y", "x"], vxInv),
+            "vy": (["time", "y", "x"], vyInv),
+        },
+        coords={
+            "time": ind_tot,
+            "x": X_arr[x_min-1:x_max+1],
+            "y": Y_arr[y_min-1:y_max+1],
+        },
+        attrs=data_dict[urls[0]]['zarr_store'].attrs,
+    ).chunk({'time': 1, 'x': 100, 'y': 100})
+
+    from dask.diagnostics import ProgressBar
+    write_job = new_ds.to_netcdf(f'Inverted_Cube.nc', compute=False)
+    with ProgressBar():
+        print(f"Writing to {'Inverted_Cube.nc'}")
+        write_job.compute()
+
+# %% ../nbs/03_inversion.ipynb 30
 # Create a new dataset with vx and vy, using attributes from 'ds'
 try:
     new_ds = xr.Dataset(

@@ -155,6 +155,7 @@ def return_clicked_info(clicked_widget):
     if num_glaciers > 0:
     
         coord_ls = clicked_widget.added_coords
+        #coord_ls = [coord_ls[0][1], coord_ls[0][0]]
 
         gpdf_ls.append(clicked_widget.added_glaciers)
         unique_values, unique_indices = np.unique(np.array([gpdf_ls[0][i]['RGIID'] for i in range(len(gpdf_ls[0]))]), return_index=True)

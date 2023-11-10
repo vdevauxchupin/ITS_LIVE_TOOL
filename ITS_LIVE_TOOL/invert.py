@@ -233,7 +233,6 @@ def Inv_reg(vObs, data, fillvalue):
     
     return vInv
 
-
 # %% ../nbs/04a_inversion-oo.ipynb 38
 try:
     data_dict, X_valid, Y_valid, X_tot, Y_tot = create_data_dict(urls)

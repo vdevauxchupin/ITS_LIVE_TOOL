@@ -25,7 +25,8 @@ eventually, we hope to have a pip install. for now, install via:
 
 We implement 3 classes of objects to store ITS_LIVE velocity data with the goal of making it easy and intuitive to keep track of the data you're working with and scale analysis. 
 
-
+The illustration below provides a high-level overview of the main object classes within this package: 
+[ITS_LIVE_TOOL objects](https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/figs/Image_20231113_113529_391.jpeg?raw=true)
 
 ### Interactive widget
 

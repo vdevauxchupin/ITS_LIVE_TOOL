@@ -23,6 +23,10 @@ eventually, we hope to have a pip install. for now, install via:
 
 ## Data access + organization
 
+We implement 3 classes of objects to store ITS_LIVE velocity data with the goal of making it easy and intuitive to keep track of the data you're working with and scale analysis. 
+
+
+
 ### Interactive widget
 
 ### [`Glacier`](https://e-marshall.github.io/ITS_LIVE_TOOL/setup.html#glacier), [`Glacier_Point`](https://e-marshall.github.io/ITS_LIVE_TOOL/setup.html#glacier_point), and `Glacier_Centerline` objects

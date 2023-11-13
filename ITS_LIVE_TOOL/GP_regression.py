@@ -139,9 +139,6 @@ for i in range(len(point_ls)):
     mod_output = SKLearnModelPreds(mod_input_ls[i], kernel)
     mod_output_ls.append(mod_output)
 
-# %% ../nbs/05_GPregression.ipynb 23
-%matplotlib widget
-
 # %% ../nbs/05_GPregression.ipynb 24
 fig, ax = plt.subplots()
 

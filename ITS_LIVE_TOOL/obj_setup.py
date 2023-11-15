@@ -274,6 +274,9 @@ class Glacier_Point():
         #self.TRIM_cube_around_point = self._subset_ds_by_sensor_baseline('dc_cube')
 
     def point_to_gdf(self):
+        '''This method takes the point_latlon attribute of a glacier_point class object. 
+        It returns a geopandas data frame of the specified point
+        '''
         
         d = {'x': self.point_latlon[0],
              'y':self.point_latlon[1]}
@@ -514,11 +517,3 @@ def return_clicked_info(clicked_widget):
         #str = 'The map needs to be clicked for the appropriate object to be created'
 
         pass
-
-# %% ../nbs/03_obj_setup.ipynb 28
-try: 
-    coords, gpdf, urls = return_clicked_info(data_map)
-    point = [coords[0][1], coords[0][0]]
-
-except:
-    pass

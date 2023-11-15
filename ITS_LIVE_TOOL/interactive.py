@@ -78,7 +78,7 @@ class Widget():
 
     def _make_geojson_layer(self):
         # geojson layer with hover handler
-        with open("catalog_v02.json") as f:
+        with open("/uufs/chpc.utah.edu/common/home/u1269862/2023_fall/ITS_LIVE_TOOL/nbs/catalog_v02.json") as f:
             geojson_data = json.load(f)
         
         for feature in geojson_data["features"]:

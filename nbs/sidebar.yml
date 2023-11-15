@@ -5,8 +5,8 @@ website:
       - 00_core.ipynb
       - 01_datacube_tools.ipynb
       - 02_interactive.ipynb
-      - 03_inversion.ipynb
-      - 04_setup.ipynb
-      - 05_GPregression.ipynb
-      - 06_temporalbaseline_filter.ipynb
-      - Untitled.ipynb
+      - 03_obj_setup.ipynb
+      - 04_inversion.ipynb
+      - 04a_inversion-oo.ipynb
+      - 05_Data_inspection.ipynb
+      - 06_GPregression.ipynb

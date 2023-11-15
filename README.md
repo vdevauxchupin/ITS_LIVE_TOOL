@@ -50,7 +50,13 @@ active development and thus should be considered in *beta* phase. Please
 perform your own data inspection and due diligence if implementing these
 methods.
 
-### Temporal baseline thresholds
+### Concerns specific to slower-moving glaciers
+
+We illustrate several data inspection steps and situations that can occur when examining slower-moving glaciers whose movement is closer to the noise floor of detectable ice flow. This notebook also discusses and provides methods to implement different outlier detection routines in these situations. 
+
+See the [data inspection notebook](/nbs/05_Data_inspection.ipynb). 
+
+### Temporal baseline thresholds (take out if keeping above)
 
 This is not necessary in all situations but can be a useful step to familiarize yourself with the dataset with which you're working. See the notebook titled `temporalbaseline_filter.ipynb` for more discussion and examples of this. 
 

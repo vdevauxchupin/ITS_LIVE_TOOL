@@ -2,8 +2,8 @@ project:
   output-dir: _docs
 
 website:
-  title: "ITS_LIVE_Analysis"
-  site-url: "https://e-marshall.github.io/ITS_LIVE_Analysis"
+  title: "ITS_LIVE_TOOL"
+  site-url: "https://e-marshall.github.io/ITS_LIVE_TOOL"
   description: "Repository gathering useful notebooks and code to work with ITS_LIVE Data"
   repo-branch: main
-  repo-url: "https://github.com/e-marshall/ITS_LIVE_Analysis"
+  repo-url: "https://github.com/e-marshall/ITS_LIVE_TOOL"

@@ -416,70 +416,92 @@ def calc_min_tbaseline(Point):
 def create_glacier_from_click(w_obj, i):
     '''this function takes clicked information (from a single click, not all clicked points) and returns a `Glacier` type object
     '''
-    name = w_obj.added_glaciers[i]['NAME'].iloc[0]
-    rgi_id =  w_obj.added_glaciers[i]['RGIID'].iloc[0]
-    utm_crs = str(w_obj.added_glaciers[i].estimate_utm_crs())
-    rgi_gpdf = w_obj.added_glaciers[i]
-    itslive_url = w_obj.urls[i]
-    glacier = Glacier(name, rgi_id, utm_crs, 'widget', rgi_gpdf, itslive_url)
-    
-    return glacier
-                            
+    if len(w_obj.added_glaciers) > 0:
+        name = w_obj.added_glaciers[i]['NAME'].iloc[0]
+        rgi_id =  w_obj.added_glaciers[i]['RGIID'].iloc[0]
+        utm_crs = str(w_obj.added_glaciers[i].estimate_utm_crs())
+        rgi_gpdf = w_obj.added_glaciers[i]
+        itslive_url = w_obj.urls[i]
+        glacier = Glacier(name, rgi_id, utm_crs, 'widget', rgi_gpdf, itslive_url)
+        
+        return glacier
+
+    else:
+        print('No selection made')
 
 # %% ../nbs/03_obj_setup.ipynb 17
 def create_glacier_point_from_click(w_obj, i, label):
     var_ls = ['v','vy','vx','v_error','mapping','satellite_img1','satellite_img2','acquisition_date_img1', 'acquisition_date_img2']
 
+    if len(w_obj.added_glaciers) > 0:
 
-    glacier_pt = Glacier_Point(w_obj.added_glaciers[i]['NAME'], label,  w_obj.added_glaciers[i]['RGIID'].iloc[0], [w_obj.added_coords[i][1], w_obj.added_coords[i][0]], var_ls)
-    #note , need to add test for cases where itslive is in a different crs than gpd.estimate_utm_crs() expects
-    return glacier_pt
+        glacier_pt = Glacier_Point(w_obj.added_glaciers[i]['NAME'], label,  w_obj.added_glaciers[i]['RGIID'].iloc[0], [w_obj.added_coords[i][1], w_obj.added_coords[i][0]], var_ls)
+        #note , need to add test for cases where itslive is in a different crs than gpd.estimate_utm_crs() expects
+        return glacier_pt
+    else:
+        print('No selection made')
 
 # %% ../nbs/03_obj_setup.ipynb 18
 def create_glacier_centerline_from_click(w_obj, i):
 
-    glacier_cl = Glacier_Centerline(w_obj.added_glaciers[i]['NAME'], w_obj.added_glaciers[i]['RGIID'].iloc[0])
+    if len(w_obj.added_glacier) > 0:
+        glacier_cl = Glacier_Centerline(w_obj.added_glaciers[i]['NAME'], w_obj.added_glaciers[i]['RGIID'].iloc[0])
+    
+        return glacier_cl
 
-    return glacier_cl
+    else: 
+        print('No selection made')
 
 # %% ../nbs/03_obj_setup.ipynb 19
 def create_multiple_glacier_objs(w_obj):
     glacier_ls = []
-
-    for i in range(len(w_obj.added_glaciers)):
     
-        glacier = create_glacier_from_click(w_obj, i)
-        glacier_ls.append(glacier)
+    if len(w_obj.added_glacier) > 0:
 
-    return glacier_ls
-    #glacier0, glacier1 = glacier_ls[0], glacier_ls[1]
+        for i in range(len(w_obj.added_glaciers)):
+        
+            glacier = create_glacier_from_click(w_obj, i)
+            glacier_ls.append(glacier)
+    
+        return glacier_ls
+        #glacier0, glacier1 = glacier_ls[0], glacier_ls[1]
+    else:
+        print('No selection made')
 
 # %% ../nbs/03_obj_setup.ipynb 20
 def create_multiple_glacier_point_objs(w_obj):
-    
-    glacier_pt_ls = []
 
-    label_ls = ['point 0','point 1']
+    if len(w_obj.added_glaciers) > 0:
+        glacier_pt_ls = []
     
-    for i in range(len(w_obj.added_glaciers)):
+        label_ls = ['point 0','point 1']
+        
+        for i in range(len(w_obj.added_glaciers)):
+        
+            glacier_pt = create_glacier_point_from_click(w_obj,i, label_ls[i])
+            glacier_pt_ls.append(glacier_pt)
     
-        glacier_pt = create_glacier_point_from_click(w_obj,i, label_ls[i])
-        glacier_pt_ls.append(glacier_pt)
-
-    return glacier_pt_ls
+        return glacier_pt_ls
+        
+    else:
+        print('No selection made')
    # glacier_pt0, glacier_pt1 = glacier_pt_ls[0], glacier_pt_ls[1]
 
 # %% ../nbs/03_obj_setup.ipynb 21
 def create_multiple_glacier_centerline_objs(w_obj):
+    if len(w_obj.added_glaciers) > 0:
+        
+        glacier_centerline_ls = []
+    
+        for i in range(len(w_obj.added_glaciers)):
+    
+            glacier_centerline = create_glacier_centerline_from_click(w_obj, i)
+            glacier_centerline_ls.append(glacier_centerline)
+    
+        return glacier_centerline_ls
 
-    glacier_centerline_ls = []
-
-    for i in range(len(w_obj.added_glaciers)):
-
-        glacier_centerline = create_glacier_centerline_from_click(w_obj, i)
-        glacier_centerline_ls.append(glacier_centerline)
-
-    return glacier_centerline_ls
+    else:
+        print('No selection made')
 
 # %% ../nbs/03_obj_setup.ipynb 27
 def return_clicked_info(clicked_widget):

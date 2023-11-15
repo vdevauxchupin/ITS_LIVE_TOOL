@@ -63,10 +63,8 @@ ul.task-list li input[type="checkbox"] {
 
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="ITS_LIVE_TOOL - 04: access_setup – Data setup + prep">
-<meta property="og:description" content="">
 <meta property="og:site-name" content="ITS_LIVE_TOOL">
 <meta name="twitter:title" content="ITS_LIVE_TOOL - 04: access_setup – Data setup + prep">
-<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -152,25 +150,13 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#imports" id="toc-imports" class="nav-link active" data-scroll-target="#imports">imports</a></li>
   <li><a href="#defining-classes" id="toc-defining-classes" class="nav-link" data-scroll-target="#defining-classes">Defining classes</a>
   <ul class="collapse">
-  <li><a href="#point_to_gdf" id="toc-point_to_gdf" class="nav-link" data-scroll-target="#point_to_gdf">point_to_gdf</a></li>
-  <li><a href="#glacier_centerline" id="toc-glacier_centerline" class="nav-link" data-scroll-target="#glacier_centerline">Glacier_Centerline</a></li>
-  <li><a href="#glacier" id="toc-glacier" class="nav-link" data-scroll-target="#glacier">Glacier</a></li>
-  <li><a href="#calc_min_tbaseline" id="toc-calc_min_tbaseline" class="nav-link" data-scroll-target="#calc_min_tbaseline">calc_min_tbaseline</a></li>
-  <li><a href="#glacier_point" id="toc-glacier_point" class="nav-link" data-scroll-target="#glacier_point">Glacier_Point</a></li>
   <li><a href="#selecting-data" id="toc-selecting-data" class="nav-link" data-scroll-target="#selecting-data">Selecting data</a></li>
   </ul></li>
   <li><a href="#creating-objects-of-glacier-glacier_centerline-glacier_point-classes" id="toc-creating-objects-of-glacier-glacier_centerline-glacier_point-classes" class="nav-link" data-scroll-target="#creating-objects-of-glacier-glacier_centerline-glacier_point-classes">Creating objects of <code>Glacier</code>, <code>Glacier_Centerline</code>, <code>Glacier_Point</code> classes</a>
   <ul class="collapse">
   <li><a href="#create-directly-from-widget" id="toc-create-directly-from-widget" class="nav-link" data-scroll-target="#create-directly-from-widget">Create directly from widget</a></li>
-  <li><a href="#create_glacier_from_click" id="toc-create_glacier_from_click" class="nav-link" data-scroll-target="#create_glacier_from_click">create_glacier_from_click</a></li>
-  <li><a href="#create_glacier_point_from_click" id="toc-create_glacier_point_from_click" class="nav-link" data-scroll-target="#create_glacier_point_from_click">create_glacier_point_from_click</a></li>
-  <li><a href="#create_glacier_centerline_from_click" id="toc-create_glacier_centerline_from_click" class="nav-link" data-scroll-target="#create_glacier_centerline_from_click">create_glacier_centerline_from_click</a></li>
-  <li><a href="#create_multiple_glacier_objs" id="toc-create_multiple_glacier_objs" class="nav-link" data-scroll-target="#create_multiple_glacier_objs">create_multiple_glacier_objs</a></li>
-  <li><a href="#create_multiple_glacier_point_objs" id="toc-create_multiple_glacier_point_objs" class="nav-link" data-scroll-target="#create_multiple_glacier_point_objs">create_multiple_glacier_point_objs</a></li>
-  <li><a href="#create_multiple_glacier_centerline_objs" id="toc-create_multiple_glacier_centerline_objs" class="nav-link" data-scroll-target="#create_multiple_glacier_centerline_objs">create_multiple_glacier_centerline_objs</a></li>
   <li><a href="#create-manually" id="toc-create-manually" class="nav-link" data-scroll-target="#create-manually">Create manually</a></li>
-  <li><a href="#return_clicked_info" id="toc-return_clicked_info" class="nav-link" data-scroll-target="#return_clicked_info">return_clicked_info</a></li>
-  <li><a href="#glacier-1" id="toc-glacier-1" class="nav-link" data-scroll-target="#glacier-1">Glacier</a></li>
+  <li><a href="#glacier" id="toc-glacier" class="nav-link" data-scroll-target="#glacier">Glacier</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -201,53 +187,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="defining-classes" class="level2">
 <h2 class="anchored" data-anchor-id="defining-classes">Defining classes</h2>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L65" target="_blank" style="float:right; font-size:smaller">source</a></p>
-<section id="point_to_gdf" class="level3">
-<h3 class="anchored" data-anchor-id="point_to_gdf">point_to_gdf</h3>
-<blockquote class="blockquote">
-<pre><code> point_to_gdf (point_ls)</code></pre>
-</blockquote>
-<p>creates a geodataframe from a given point</p>
-<p>input: list of [x,y] coords output: geopandas gdf of point, in epsg:4326</p>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L80" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="glacier_centerline" class="level3">
-<h3 class="anchored" data-anchor-id="glacier_centerline">Glacier_Centerline</h3>
-<blockquote class="blockquote">
-<pre><code> Glacier_Centerline (name, rgi_id)</code></pre>
-</blockquote>
-<p>class to hold all data associated with a centerline</p>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L190" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="glacier" class="level3">
-<h3 class="anchored" data-anchor-id="glacier">Glacier</h3>
-<blockquote class="blockquote">
-<pre><code> Glacier (name, rgi_id, utm_crs, creation_type, rgi_outline_from_widget,
-          itslive_url)</code></pre>
-</blockquote>
-<p>class to hold all data associated with individual glacier inputs: name (str), rgi_id (str), working_dir_path (str, where oggm data should be written) url (str, url to oggm prepro data), centerline path (str, path to locally stored</p>
-<p>NOTE: now a ‘creation_flag’ must be passed. this specifies if the object was created manually or directly from an interaction with the widget. If created from the widget, it takes the rgi outline from the clicked data, if created manually it accesses via request</p>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L396" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="calc_min_tbaseline" class="level3">
-<h3 class="anchored" data-anchor-id="calc_min_tbaseline">calc_min_tbaseline</h3>
-<blockquote class="blockquote">
-<pre><code> calc_min_tbaseline (Point)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L251" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="glacier_point" class="level3">
-<h3 class="anchored" data-anchor-id="glacier_point">Glacier_Point</h3>
-<blockquote class="blockquote">
-<pre><code> Glacier_Point (name, label, rgi_id, point_coords_latlon, var_ls)</code></pre>
-</blockquote>
-<p>Initialize self. See help(type(self)) for accurate signature.</p>
-</section>
 <section id="selecting-data" class="level3">
 <h3 class="anchored" data-anchor-id="selecting-data">Selecting data</h3>
 </section>
@@ -256,70 +195,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="creating-objects-of-glacier-glacier_centerline-glacier_point-classes">Creating objects of <a href="https://e-marshall.github.io/ITS_LIVE_TOOL/obj_setup.html#glacier"><code>Glacier</code></a>, <a href="https://e-marshall.github.io/ITS_LIVE_TOOL/obj_setup.html#glacier_centerline"><code>Glacier_Centerline</code></a>, <a href="https://e-marshall.github.io/ITS_LIVE_TOOL/obj_setup.html#glacier_point"><code>Glacier_Point</code></a> classes</h2>
 <section id="create-directly-from-widget" class="level3">
 <h3 class="anchored" data-anchor-id="create-directly-from-widget">Create directly from widget</h3>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L416" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_glacier_from_click" class="level3">
-<h3 class="anchored" data-anchor-id="create_glacier_from_click">create_glacier_from_click</h3>
-<blockquote class="blockquote">
-<pre><code> create_glacier_from_click (w_obj, i)</code></pre>
-</blockquote>
-<p>this function takes clicked information (from a single click, not all clicked points) and returns a <a href="https://e-marshall.github.io/ITS_LIVE_TOOL/obj_setup.html#glacier"><code>Glacier</code></a> type object</p>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L430" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_glacier_point_from_click" class="level3">
-<h3 class="anchored" data-anchor-id="create_glacier_point_from_click">create_glacier_point_from_click</h3>
-<blockquote class="blockquote">
-<pre><code> create_glacier_point_from_click (w_obj, i, label)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L439" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_glacier_centerline_from_click" class="level3">
-<h3 class="anchored" data-anchor-id="create_glacier_centerline_from_click">create_glacier_centerline_from_click</h3>
-<blockquote class="blockquote">
-<pre><code> create_glacier_centerline_from_click (w_obj, i)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L446" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_multiple_glacier_objs" class="level3">
-<h3 class="anchored" data-anchor-id="create_multiple_glacier_objs">create_multiple_glacier_objs</h3>
-<blockquote class="blockquote">
-<pre><code> create_multiple_glacier_objs (w_obj)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L458" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_multiple_glacier_point_objs" class="level3">
-<h3 class="anchored" data-anchor-id="create_multiple_glacier_point_objs">create_multiple_glacier_point_objs</h3>
-<blockquote class="blockquote">
-<pre><code> create_multiple_glacier_point_objs (w_obj)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L473" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="create_multiple_glacier_centerline_objs" class="level3">
-<h3 class="anchored" data-anchor-id="create_multiple_glacier_centerline_objs">create_multiple_glacier_centerline_objs</h3>
-<blockquote class="blockquote">
-<pre><code> create_multiple_glacier_centerline_objs (w_obj)</code></pre>
-</blockquote>
 </section>
 <section id="create-manually" class="level3">
 <h3 class="anchored" data-anchor-id="create-manually">Create manually</h3>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L485" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
-<section id="return_clicked_info" class="level3">
-<h3 class="anchored" data-anchor-id="return_clicked_info">return_clicked_info</h3>
-<blockquote class="blockquote">
-<pre><code> return_clicked_info (clicked_widget)</code></pre>
-</blockquote>
-<p>this function formats information from a user click on the Widget object. The output is a tuple with the form (coordinate list of clicked point, gpd.geodataframe with rgi info of clicked glacier, url of itslive zarr datacube covering clicked point</p>
-</section>
-<section id="glacier-1" class="level3">
-<h3 class="anchored" data-anchor-id="glacier-1">Glacier</h3>
+<section id="glacier" class="level3">
+<h3 class="anchored" data-anchor-id="glacier">Glacier</h3>
 
 
 </section>

@@ -151,10 +151,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#data-inspection" id="toc-data-inspection" class="nav-link active" data-scroll-target="#data-inspection">Data Inspection</a>
   <ul class="collapse">
-  <li><a href="#data-prep" id="toc-data-prep" class="nav-link" data-scroll-target="#data-prep">Data prep</a>
-  <ul class="collapse">
-  <li><a href="#swap_time_dim" id="toc-swap_time_dim" class="nav-link" data-scroll-target="#swap_time_dim">swap_time_dim</a></li>
-  </ul></li>
+  <li><a href="#data-prep" id="toc-data-prep" class="nav-link" data-scroll-target="#data-prep">Data prep</a></li>
   <li><a href="#thresholding-using-v_error" id="toc-thresholding-using-v_error" class="nav-link" data-scroll-target="#thresholding-using-v_error">1. Thresholding using v_error</a>
   <ul class="collapse">
   <li><a href="#description" id="toc-description" class="nav-link" data-scroll-target="#description">Description</a></li>
@@ -167,9 +164,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#description-1" id="toc-description-1" class="nav-link" data-scroll-target="#description-1">Description:</a></li>
   <li><a href="#pros-1" id="toc-pros-1" class="nav-link" data-scroll-target="#pros-1">Pros</a></li>
   <li><a href="#find-long-term-speed-at-this-point" id="toc-find-long-term-speed-at-this-point" class="nav-link" data-scroll-target="#find-long-term-speed-at-this-point">Find long-term speed at this point</a></li>
-  <li><a href="#find_longterm_median_v" id="toc-find_longterm_median_v" class="nav-link" data-scroll-target="#find_longterm_median_v">find_longterm_median_v</a></li>
-  <li><a href="#calc_min_tbaseline" id="toc-calc_min_tbaseline" class="nav-link" data-scroll-target="#calc_min_tbaseline">calc_min_tbaseline</a></li>
-  <li><a href="#trim_by_baseline" id="toc-trim_by_baseline" class="nav-link" data-scroll-target="#trim_by_baseline">trim_by_baseline</a></li>
   </ul></li>
   <li><a href="#blunt-temporal-baseline-minimum-for-all-sensors" id="toc-blunt-temporal-baseline-minimum-for-all-sensors" class="nav-link" data-scroll-target="#blunt-temporal-baseline-minimum-for-all-sensors">3. Blunt temporal baseline minimum for all sensors</a>
   <ul class="collapse">
@@ -213,14 +207,6 @@ ul.task-list li input[type="checkbox"] {
 <p>This is a notebook intended to highlight some of the questions that can arise, specifically when using ITS_LIVE to study slower moving glaciers. The notebook contains a few functions designed to filter the dataset based on different characteristics. They are designed to be modular and flexible. NOTE: these are not meant to be blindly implemented, rather to provide examples of possible solutions to outlier detection problems. Feel free to use and adjust them to best fit your use-case.</p>
 <section id="data-prep" class="level2">
 <h2 class="anchored" data-anchor-id="data-prep">Data prep</h2>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/dataset_inspection.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
-<section id="swap_time_dim" class="level3">
-<h3 class="anchored" data-anchor-id="swap_time_dim">swap_time_dim</h3>
-<blockquote class="blockquote">
-<pre><code> swap_time_dim (ds)</code></pre>
-</blockquote>
-</section>
 </section>
 <section id="thresholding-using-v_error" class="level2">
 <h2 class="anchored" data-anchor-id="thresholding-using-v_error">1. Thresholding using v_error</h2>
@@ -259,30 +245,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="find-long-term-speed-at-this-point" class="level3">
 <h3 class="anchored" data-anchor-id="find-long-term-speed-at-this-point">Find long-term speed at this point</h3>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/dataset_inspection.py#L36" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="find_longterm_median_v" class="level3">
-<h3 class="anchored" data-anchor-id="find_longterm_median_v">find_longterm_median_v</h3>
-<blockquote class="blockquote">
-<pre><code> find_longterm_median_v (ds)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/obj_setup.py#L396" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="calc_min_tbaseline" class="level3">
-<h3 class="anchored" data-anchor-id="calc_min_tbaseline">calc_min_tbaseline</h3>
-<blockquote class="blockquote">
-<pre><code> calc_min_tbaseline (ds)</code></pre>
-</blockquote>
-<hr>
-<p><a href="https://github.com/e-marshall/ITS_LIVE_TOOL/blob/main/ITS_LIVE_TOOL/dataset_inspection.py#L66" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="trim_by_baseline" class="level3">
-<h3 class="anchored" data-anchor-id="trim_by_baseline">trim_by_baseline</h3>
-<blockquote class="blockquote">
-<pre><code> trim_by_baseline (ds)</code></pre>
-</blockquote>
 </section>
 </section>
 <section id="blunt-temporal-baseline-minimum-for-all-sensors" class="level2">

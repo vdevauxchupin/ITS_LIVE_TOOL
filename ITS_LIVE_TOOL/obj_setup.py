@@ -76,7 +76,6 @@ def point_to_gdf(point_ls):
     gdf = gpd.GeoDataFrame(df, geometry = gpd.points_from_xy(df.x, df.y, crs='EPSG:4326'))
     return gdf
 
-
 # %% ../nbs/03_obj_setup.ipynb 8
 class Glacier_Centerline():
     '''class to hold all data associated with a centerline'''

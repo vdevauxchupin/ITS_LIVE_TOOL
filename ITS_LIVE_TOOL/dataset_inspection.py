@@ -32,7 +32,6 @@ def swap_time_dim(ds):
     ds = ds.assign_coords({'img_separation': ds.img_separation})
     return ds#| export
 
-
 # %% ../nbs/05_Data_inspection.ipynb 32
 def find_longterm_median_v(ds):
 
@@ -93,4 +92,3 @@ def trim_by_baseline(ds):
         return combine
     except:
         print('something went wrong')
-

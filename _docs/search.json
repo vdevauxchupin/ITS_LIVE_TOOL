@@ -37,14 +37,14 @@
   {
     "objectID": "obj_setup.html#defining-classes",
     "href": "obj_setup.html#defining-classes",
-    "title": "04: access_setup – Data setup + prep",
+    "title": "04: Object setup",
     "section": "Defining classes",
     "text": "Defining classes\n\nSelecting data"
   },
   {
     "objectID": "obj_setup.html#creating-objects-of-glacier-glacier_centerline-glacier_point-classes",
     "href": "obj_setup.html#creating-objects-of-glacier-glacier_centerline-glacier_point-classes",
-    "title": "04: access_setup – Data setup + prep",
+    "title": "04: Object setup",
     "section": "Creating objects of Glacier, Glacier_Centerline, Glacier_Point classes",
     "text": "Creating objects of Glacier, Glacier_Centerline, Glacier_Point classes\n\nCreate directly from widget\n\n\nCreate manually\n\n\nGlacier"
   },

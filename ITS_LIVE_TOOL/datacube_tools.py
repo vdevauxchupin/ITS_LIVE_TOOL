@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['timeseriesException', 'DATACUBETOOLS']
 
-# %% ../nbs/01_datacube_tools.ipynb 3
+# %% ../nbs/01_datacube_tools.ipynb 4
 # to get and use geojson datacube catalog
 import json
 import logging

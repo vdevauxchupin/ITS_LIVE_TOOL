@@ -1,3 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/index.html</loc>
+    <lastmod>2023-11-16T20:47:20.524Z</lastmod>
+  </url>
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/obj_setup.html</loc>
+    <lastmod>2023-11-16T20:47:18.039Z</lastmod>
+  </url>
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/datacube_tools.html</loc>
+    <lastmod>2023-11-16T20:47:17.340Z</lastmod>
+  </url>
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/core.html</loc>
+    <lastmod>2023-11-16T20:47:16.978Z</lastmod>
+  </url>
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/interactive.html</loc>
+    <lastmod>2023-11-16T20:47:17.690Z</lastmod>
+  </url>
+  <url>
+    <loc>https://e-marshall.github.io/ITS_LIVE_TOOL/data_inspection.html</loc>
+    <lastmod>2023-11-16T20:47:18.722Z</lastmod>
+  </url>
 </urlset>

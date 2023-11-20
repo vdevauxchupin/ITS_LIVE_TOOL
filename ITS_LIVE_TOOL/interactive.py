@@ -34,7 +34,10 @@ from requests import Request
 
 # %% ../nbs/02_interactive.ipynb 5
 class Widget():
-
+    '''this is an interactive map widget to streamline access itslive data. 
+    left and right click for rgi info about a selected location and corresponding url 
+    to ITS_LIVE image pair time series granule
+    '''
     def __init__(self):
 
         self.wms_url = "https://glims.org/geoserver/ows?SERVICE=WMS&"
@@ -146,6 +149,8 @@ class Widget():
 
 # %% ../nbs/02_interactive.ipynb 18
 def create_multiple_glacier_objs(w_obj):
+    '''wrapper function to create multiple objects from multiple clicks
+    '''
     glacier_ls = []
 
     for i in range(len(w_obj.added_glaciers)):
@@ -158,6 +163,8 @@ def create_multiple_glacier_objs(w_obj):
 
 # %% ../nbs/02_interactive.ipynb 24
 def create_multiple_glacier_point_objs(w_obj):
+    '''wrapper function to create multiple glacier point objects from multiple clicks
+    '''
     
     glacier_pt_ls = []
 
@@ -173,6 +180,8 @@ def create_multiple_glacier_point_objs(w_obj):
 
 # %% ../nbs/02_interactive.ipynb 25
 def create_multiple_glacier_centerline_objs(w_obj):
+    '''wrapper  function to create multiple glacier centerline objects from multiple clicks 
+    '''
 
     glacier_centerline_ls = []
 

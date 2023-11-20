@@ -74,7 +74,11 @@ For a detailed, code-based walk through of ITS_LIVE_TOOL functionality, check ou
 
 ## Contact
 
-- add our emails
+### Glacier objects, Gaussian Process
+- emma.marshall@utah.edu
+  
+### Inversion, GUI
+- vdevauxchupin@alaska.edu
 
 ## Acknowledgements
 - co-authors, funding sources, other collaborators, anythign else?
@@ -82,7 +86,18 @@ For a detailed, code-based walk through of ITS_LIVE_TOOL functionality, check ou
 ## References
 
 ### Data
-- cite ITS_LIVE, RGI v7 outlines, OGGM centerlines
+<a id="1">[1]</a> 
+Velocity data generated using auto-RIFT (Gardner et al., 2018) and provided by the NASA MEaSUREs ITS_LIVE project (Gardner et al., 2023). [https://its-live.jpl.nasa.gov/](url)
+
+<a id="2">[2]</a>
+Maussion, F et. al (2019).
+The Open Global Glacier Model (OGGM) v1.1.
+Geoscientific Model Development.
+DOI: [10.5194/gmd-12-909-2019](url)
+
+<a id="3">[3]</a>
+RGI 7.0 Consortium, 2023. Randolph Glacier Inventory - A Dataset of Global Glacier Outlines, Version 7.0. Boulder, Colorado USA. NSIDC: National Snow and Ice Data Center. doi:10.5067/f6jmovy5navz. Online access: [https://doi.org/10.5067/f6jmovy5navz](url)
+
 ### Methods 
 - cite gaussian process, temporal inversion literature here?
 ### Software

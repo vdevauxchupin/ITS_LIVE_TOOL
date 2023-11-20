@@ -31,10 +31,15 @@ import ipywidgets as widgets
 from ipywidgets import Label, VBox
 from owslib.wfs import WebFeatureService
 from requests import Request
+import urllib.request, json 
+
 
 # %% ../nbs/02_interactive.ipynb 5
 class Widget():
-
+    '''this is an interactive map widget to streamline access itslive data. 
+    left and right click for rgi info about a selected location and corresponding url 
+    to ITS_LIVE image pair time series granule
+    '''
     def __init__(self):
 
         self.wms_url = "https://glims.org/geoserver/ows?SERVICE=WMS&"
@@ -78,8 +83,9 @@ class Widget():
 
     def _make_geojson_layer(self):
         # geojson layer with hover handler
-        with open("/uufs/chpc.utah.edu/common/home/u1269862/2023_fall/ITS_LIVE_TOOL/nbs/catalog_v02.json") as f:
-            geojson_data = json.load(f)
+        with urllib.request.urlopen('https://its-live-data.s3.amazonaws.com/datacubes/catalog_v02.json') as url:
+
+            geojson_data = json.load(url)
         
         for feature in geojson_data["features"]:
             feature["properties"]["style"] = {
@@ -146,6 +152,8 @@ class Widget():
 
 # %% ../nbs/02_interactive.ipynb 18
 def create_multiple_glacier_objs(w_obj):
+    '''wrapper function to create multiple objects from multiple clicks
+    '''
     glacier_ls = []
 
     for i in range(len(w_obj.added_glaciers)):
@@ -158,6 +166,8 @@ def create_multiple_glacier_objs(w_obj):
 
 # %% ../nbs/02_interactive.ipynb 24
 def create_multiple_glacier_point_objs(w_obj):
+    '''wrapper function to create multiple glacier point objects from multiple clicks
+    '''
     
     glacier_pt_ls = []
 
@@ -173,6 +183,8 @@ def create_multiple_glacier_point_objs(w_obj):
 
 # %% ../nbs/02_interactive.ipynb 25
 def create_multiple_glacier_centerline_objs(w_obj):
+    '''wrapper  function to create multiple glacier centerline objects from multiple clicks 
+    '''
 
     glacier_centerline_ls = []
 

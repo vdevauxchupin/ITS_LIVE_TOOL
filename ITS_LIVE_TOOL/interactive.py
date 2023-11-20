@@ -133,7 +133,13 @@ class Widget():
             print(f"You have selected the glacier {df['NAME'].values[0]}, ID: {df['RGIID'].values[0]} ")
             #gdf_list.append(df)
             self.added_glaciers.append(df)
-            #print(len(self.added_glacier))
+
+            geo_data = GeoData(geo_dataframe = df,
+                               style={'color':'black', 'fillColor':'#3366cc','opacity':0.05, 'weight':1.9, 'dashArray':'2', 'fillOpacity':0.6},
+                               hover_style={'fillColor':'blue','fillOpacity':0.2},
+                               name = 'Glacier')
+            self.map.add_layer(geo_data) #add glacier highlight to map
+
 
 
             #return gdf_list

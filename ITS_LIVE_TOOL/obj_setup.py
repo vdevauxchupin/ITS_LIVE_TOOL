@@ -456,7 +456,7 @@ def create_glacier_centerline_from_click(w_obj, i):
 def create_multiple_glacier_objs(w_obj):
     glacier_ls = []
     
-    if len(w_obj.added_glacier) > 0:
+    if len(w_obj.added_glaciers) > 0:
 
         for i in range(len(w_obj.added_glaciers)):
         

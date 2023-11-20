@@ -2,8 +2,8 @@
 
 # %% auto 0
 __all__ = ['point_to_gdf', 'swap_time_dim', 'drop_empty_timesteps', 'Glacier_Centerline', 'Glacier', 'Glacier_Point',
-           'calc_min_tbaseline', 'create_glacier_from_click', 'create_glacier_point_from_click',
-           'create_glacier_centerline_from_click', 'create_multiple_glacier_objs', 'create_multiple_glacier_point_objs',
+           'create_glacier_from_click', 'create_glacier_point_from_click', 'create_glacier_centerline_from_click',
+           'create_multiple_glacier_objs', 'create_multiple_glacier_point_objs',
            'create_multiple_glacier_centerline_objs', 'return_clicked_info']
 
 # %% ../nbs/03_obj_setup.ipynb 4
@@ -115,7 +115,7 @@ def drop_empty_timesteps(ds):
     ds = ds.dropna(how='all', dim='time_numeric', subset='v')
     return ds
 
-# %% ../nbs/03_obj_setup.ipynb 8
+# %% ../nbs/03_obj_setup.ipynb 10
 class Glacier_Centerline():
     '''class to hold all data associated with a centerline'''
     def __init__(self, name, rgi_id):
@@ -124,8 +124,13 @@ class Glacier_Centerline():
         self.rgi_region = rgi_id.split('-')[1].split('.')[0]
         self._centerline_path = self._download_centerlines()
         self.centerlines, self.main_centerline, self.utm_zone = self._add_centerlines()
+        #self.padded_centerline_subcube = self._extract_subcube_along_padded_centerline()
 
     def _download_centerlines(self, dest_folder = os.getcwd()):
+        '''function to download oggm centerlines by rgi region. 
+        destination folder is a 'centerlines dir in the root folder
+        ''' 
+        os.makedirs(dest_folder.split('nbs')[0]+'centerlines', exist_ok=True)
         dest_folder = dest_folder.split('nbs')[0]+'centerlines/'
     
         #this first part of htis function is scraping the urls for OGGM centerlines for each RGI region from the summary page
@@ -198,6 +203,8 @@ class Glacier_Centerline():
         return a
 
     def _add_centerlines(self):
+        '''function to add gpd.geodataframe of oggm centerlines as an attribute to glacier centerline object
+        '''
         gpdf = gpd.read_file(self._centerline_path)
 
         gpdf = gpdf.loc[gpdf['RGIID'] == self.rgi_id]
@@ -207,7 +214,20 @@ class Glacier_Centerline():
         gpdf_all = gpdf.to_crs(utm)
         return gpdf_all, gpdf_main, utm
 
+    #def _extract_subcube_along_padded_centerline(self, pad=200):
+    # removing because this pulls the subucbe around a point, not an entire centerline. need to replace the subcube for a larger object but the fix for glacier_point should be done first
+    #    cl = self.centerline_main.to_crs(self.utm_crs)
+    #    line = shapely.geometry.LineString(cl.get_coordinates().loc[:,['x','y']].values)
+    #    PAD = pad #meters
+    #    line_buf = gpd.GeoSeries([line], crs=self.utm_crs).buffer(PAD, cap_style=2)
+    #    padded_cl_gdf = gpd.GeoDataFrame({'id':self.label,
+    #                              'padding':120}, index=[0], geometry=line_buf)
+    #    glacier_subcube_cl = self.datacube_sub.rio.clip(padded_cl_gdf.geometry, padded_cl_gdf.crs)
+    #    return glacier_subcube_cl
+
     def sample_n_points(self, n ):
+        '''function to select n equally spaced points along a glacier centerline. This is how glacier_centerline object can wrap glacier_point objects
+        '''
     #help from https://stackoverflow.com/questions/62990029/how-to-get-equally-spaced-points-on-a-line-in-shapely
 
         distances = np.linspace(0, self.main_centerline.length*0.90, n)
@@ -225,11 +245,10 @@ class Glacier_Centerline():
         
         
 
-# %% ../nbs/03_obj_setup.ipynb 9
+# %% ../nbs/03_obj_setup.ipynb 11
 class Glacier():
     '''class to hold all data associated with individual glacier
-    inputs: name (str), rgi_id (str), working_dir_path (str, where oggm data should be written)
-    url (str, url to oggm prepro data), centerline path (str, path to locally stored 
+    inputs: name (str), rgi_id (str), and how the object was created (either from the map widget or manually)
 
     NOTE: now a 'creation_flag' must be passed. this specifies if the object was created manually or 
     directly from an interaction with the widget. If created from the widget, it takes the rgi outline
@@ -244,13 +263,14 @@ class Glacier():
         self._rgi_outline_from_widget = rgi_outline_from_widget
         self._rgi_region = rgi_id.split('-')[1].split('.')[0]
         self._outline = self._download_rgi()
-        self.utm_zone = utm_crs
+        self.utm_zone = utm_crs #fix to access utm zone from rgi outline
         self.outline_prj = self._outline.to_crs(self.utm_zone)
         self.itslive_url = itslive_url #this for passing to inversion script
         #self.utm_zone = str(self.outline.estimate_utm_crs())
         
     def _download_rgi(self):
-        
+        '''function to download RGI data for a specified region
+        '''
        
         if self.creation_type == 'widget':
 
@@ -286,10 +306,12 @@ class Glacier():
             
             return data_glacier
 
-# %% ../nbs/03_obj_setup.ipynb 10
+# %% ../nbs/03_obj_setup.ipynb 12
 class Glacier_Point():
-
-    def __init__(self, name, label, rgi_id, point_coords_latlon, var_ls= ['None']):
+    '''class to hold all data associated with individual points on a glacier
+    inputs: name (str), label of point, rgi id (str), point coordinates in latlon (list)
+    '''
+    def __init__(self, name, label, rgi_id, point_coords_latlon):
 
         self.name = name
         self.label = label
@@ -306,9 +328,21 @@ class Glacier_Point():
         self.utm_crs = str(self.datacube_point.rio.crs)
         #self.padded_centerline_subcube = self._extract_subcube_along_padded_centerline()
         self.cube_around_point = drop_empty_timesteps(self._extract_3x3_cube_around_point())
-        #self.point_v = self._calc_point_v()
 
+    def _set_var_ls(self):
+        '''this is a function that allows a user to pass their own list of variables to be pulled for hte itslive time series
+        if no alternative list is passed then the variables listed below are pulled.
+        would be good to add some sort of message with variable options, syntax requirements etc
+        '''
+        if self._non_default_var_ls == 'no':
+            
+            var_ls == ['v','vy','vx','v_error','mapping','satellite_img1','satellite_img2','acquisition_date_img1', 'acquisition_date_img2']
+        
+        else: 
+            var_ls = input('Type the variables you would like to access here')
 
+            return var_ls
+            
     def point_to_gdf(self):
         '''This method takes the point_latlon attribute of a glacier_point class object. 
         It returns a geopandas data frame of the specified point
@@ -321,10 +355,13 @@ class Glacier_Point():
         return gdf
             
     def _add_image_pair_point(self):
+        ''' uses ITS_LIVE datacube tools to access the itslive image pair time series for a given point
+        does some preliminary formatting of xarray object returned by datacubetools.get_timeseries_at_point()
+        '''
 
         dc = datacube_tools.DATACUBETOOLS()
         var_ls = self.var_ls 
-        dc_point_full = dc.get_timeseries_at_point(self.point_latlon, point_epsg_str = '4326', variables = var_ls)
+        dc_point_full = dc.get_timeseries_at_point(self.point_latlon, point_epsg_str = '4326', variables = self.var_ls)
         dc_point = dc_point_full[1]
         crs = f"EPSG:{dc_point.mapping.attrs['spatial_epsg']}"
         dc_point = dc_point.rio.write_crs(crs)
@@ -337,14 +374,14 @@ class Glacier_Point():
     
         dc_point['img_separation'] = -1*((dc_point.acquisition_date_img1 - dc_point.acquisition_date_img2).astype('timedelta64[D]') / np.timedelta64(1,'D'))
 
-        #dc_point = dc_point.dropna(how='all', dim='mid_date', subset='v')
         dc_point = swap_time_dim(dc_point)
-        #dc_point = add_unique_ids(dc_point)
         
         return dc_point
 
 
     def _add_image_pair_subcube(self):
+        '''same as _add_image_pair_subcube() but uses the datacubetools method get_subcube_around_point() 
+        '''
 
         dc = datacube_tools.DATACUBETOOLS()
         var_ls = self.var_ls
@@ -352,7 +389,6 @@ class Glacier_Point():
         crs = f"EPSG:{dc_full_sub[0].mapping.attrs['spatial_epsg']}"
         dc_sub = dc_full_sub[1]
         dc_sub = dc_sub.rio.write_crs(crs)
-        #dc_sub = dc_sub.rio.write_nodata(np.nan)
         dc_sub = dc_sub.dropna(how='all', dim='mid_date')
         dc_sub['acquisition_date_img1'] = (('mid_date'), pd.to_datetime(dc_sub.acquisition_date_img1))
         dc_sub['acquisition_date_img2'] = (('mid_date'), pd.to_datetime(dc_sub.acquisition_date_img2))
@@ -360,26 +396,10 @@ class Glacier_Point():
         dc_sub['img_separation'] = -1*((dc_sub.acquisition_date_img1 - dc_sub.acquisition_date_img2).astype('timedelta64[D]') / np.timedelta64(1,'D'))
 
         dc_sub = dc_sub.dropna(how='all', dim='mid_date', subset='v')
-        print(len(dc_sub.mid_date.data))
-        #time_step_keep = list(dc_sub.v.dropna(how='all', dim='mid_date').mid_date.data)
-        #print(len(time_step_keep))
-        #dc_sub = dc_sub.where(dc_sub.mid_date.isin(time_step_keep), drop=True)
-
+     
         dc_sub = swap_time_dim(dc_sub)
-        #dc_sub = add_unique_ids(dc_sub)
         
         return dc_sub
-
-    def _extract_subcube_along_padded_centerline(self, pad=200):
-        
-        cl = self.glacier_centerline.to_crs(self.utm_crs)
-        line = shapely.geometry.LineString(cl.get_coordinates().loc[:,['x','y']].values)
-        PAD = pad #meters
-        line_buf = gpd.GeoSeries([line], crs=self.utm_crs).buffer(PAD, cap_style=2)
-        padded_cl_gdf = gpd.GeoDataFrame({'id':self.label,
-                                  'padding':120}, index=[0], geometry=line_buf)
-        glacier_subcube_cl = self.datacube_sub.rio.clip(padded_cl_gdf.geometry, padded_cl_gdf.crs)
-        return glacier_subcube_cl
         
     def _extract_3x3_cube_around_point(self):
     
@@ -390,69 +410,9 @@ class Glacier_Point():
 
         return dc
 
-    def _calc_point_v(self):
-        med_v = self.cube_around_point.where(self.cube_around_point.img_separation >= 365, drop=True).v.median(dim=['x','y','mid_date'])
-        return med_v
+   
 
-    def _subset_ds_by_sensor_baseline(self, format):
-        
-        min_tb_df = calc_min_tbaseline(self)
-        
-        #split ds by sensor (sensor options are hardcoded, will need to update when rest of landsat added 
-        if format == 'cl': 
-            l8 = self.padded_centerline_subcube.where(self.padded_centerline_subcube.satellite_img1 == '8.0',drop=True)
-            l9 = self.padded_centerline_subcube.where(self.padded_centerline_subcube.satellite_img1 == '9.0',drop=True)
-            s1 = self.padded_centerline_subcube.where(self.padded_centerline_subcube.satellite_img1.isin(['1A','1B']),drop=True)
-            s2 = self.padded_centerline_subcube.where(self.padded_centerline_subcube.satellite_img1.isin(['2A','2B']),drop=True)
-        elif format == 'dc_full':
-            l8 = self.datacube_sub.where(self.datacube_sub.satellite_img1 == '8.0',drop=True)
-            l9 = self.datacube_sub.where(self.datacube_sub.satellite_img1 == '9.0',drop=True)
-            s1 = self.datacube_sub.where(self.datacube_sub.satellite_img1.isin(['1A','1B']),drop=True)
-            s2 = self.datacube_sub.where(self.datacube_sub.satellite_img1.isin(['2A','2B']),drop=True)
-            
-        elif format == 'dc_cube':
-            l8 = self.cube_around_point.where(self.datacube_sub.satellite_img1 == '8.0',drop=True)
-            l9 = self.cube_around_point.where(self.datacube_sub.satellite_img1 == '9.0',drop=True)
-            s1 = self.cube_around_point.where(self.datacube_sub.satellite_img1.isin(['1A','1B']),drop=True)
-            s2 = self.cube_around_point.where(self.datacube_sub.satellite_img1.isin(['2A','2B']),drop=True)
-    
-        l8_sub = l8.where(l8.img_separation >= int(min_tb_df.loc[min_tb_df['sensor'] == 'L8']['min_tb (days)']), drop=True)
-        l9_sub = l9.where(l9.img_separation >= int(min_tb_df.loc[min_tb_df['sensor'] == 'L9']['min_tb (days)']), drop=True)
-        s1_sub = s1.where(s1.img_separation >= int(min_tb_df.loc[min_tb_df['sensor'] == 'S1']['min_tb (days)']), drop=True)
-        s2_sub = s2.where(s2.img_separation >= int(min_tb_df.loc[min_tb_df['sensor'] == 'S2']['min_tb (days)']), drop=True)
-        ds_ls = [l8_sub, l9_sub, s1_sub, s2_sub]
-        concat_ls = []
-        for ds in range(len(ds_ls)):
-            if len(ds_ls[ds].mid_date) > 0:
-                concat_ls.append(ds_ls[ds])
-        print(len(concat_ls))
-        try:
-            combine = xr.concat(concat_ls, dim='mid_date')
-            combine = combine.sortby(combine.mid_date)
-            return combine
-        except:
-            print('something went wrong')
-                         
-def calc_min_tbaseline(Point):
-    med_v = Point.point_v.data
-    gsd_s2, gsd_l8, gsd_s1, gsd_l9 = 10,15, 10, 15
-    name_ls = ['S2','L8','S1', 'L9']
-    gsd_ls = [gsd_s2, gsd_l8, gsd_s1, gsd_l9]
-    sensor_str_ls = [['2A','2B'], '8.0',['1A','1B'],'9.0']
-    min_tb_ls = []
-    for element in range(len(gsd_ls)):
-        min_tb = ((gsd_ls[element]*2)/med_v)*365
-        min_tb_ls.append(min_tb)
-        #print(min_tb, ' days')
-
-    min_tb_dict= {'sensor':name_ls, 
-                  'gsd': gsd_ls, 
-                  'min_tb (days)': min_tb_ls,
-                 'sensor_str':sensor_str_ls}
-    df = pd.DataFrame(min_tb_dict)
-    return df
-
-# %% ../nbs/03_obj_setup.ipynb 16
+# %% ../nbs/03_obj_setup.ipynb 18
 def create_glacier_from_click(w_obj, i):
     '''this function takes clicked information (from a single click, not all clicked points) and returns a `Glacier` type object
     '''
@@ -469,7 +429,7 @@ def create_glacier_from_click(w_obj, i):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 17
+# %% ../nbs/03_obj_setup.ipynb 19
 def create_glacier_point_from_click(w_obj, i, label):
     #var_ls = ['v','vy','vx','v_error','mapping','satellite_img1','satellite_img2','acquisition_date_img1', 'acquisition_date_img2']
 
@@ -481,10 +441,10 @@ def create_glacier_point_from_click(w_obj, i, label):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 18
+# %% ../nbs/03_obj_setup.ipynb 20
 def create_glacier_centerline_from_click(w_obj, i):
 
-    if len(w_obj.added_glacier) > 0:
+    if len(w_obj.added_glaciers) > 0:
         glacier_cl = Glacier_Centerline(w_obj.added_glaciers[i]['NAME'], w_obj.added_glaciers[i]['RGIID'].iloc[0])
     
         return glacier_cl
@@ -492,7 +452,7 @@ def create_glacier_centerline_from_click(w_obj, i):
     else: 
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 19
+# %% ../nbs/03_obj_setup.ipynb 21
 def create_multiple_glacier_objs(w_obj):
     glacier_ls = []
     
@@ -508,7 +468,7 @@ def create_multiple_glacier_objs(w_obj):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 20
+# %% ../nbs/03_obj_setup.ipynb 22
 def create_multiple_glacier_point_objs(w_obj):
 
     if len(w_obj.added_glaciers) > 0:
@@ -527,7 +487,7 @@ def create_multiple_glacier_point_objs(w_obj):
         print('No selection made')
    # glacier_pt0, glacier_pt1 = glacier_pt_ls[0], glacier_pt_ls[1]
 
-# %% ../nbs/03_obj_setup.ipynb 21
+# %% ../nbs/03_obj_setup.ipynb 23
 def create_multiple_glacier_centerline_objs(w_obj):
     if len(w_obj.added_glaciers) > 0:
         
@@ -543,7 +503,7 @@ def create_multiple_glacier_centerline_objs(w_obj):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 27
+# %% ../nbs/03_obj_setup.ipynb 29
 def return_clicked_info(clicked_widget):
 
     '''this function formats information from a user click on the Widget object. 

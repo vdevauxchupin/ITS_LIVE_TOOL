@@ -13,7 +13,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import xarray as xr
 
-# %% ../nbs/04_Data_inspection.ipynb 36
+# %% ../nbs/04_Data_inspection.ipynb 28
 def find_longterm_median_v(ds):
 
     ds_long = ds.where(ds.img_separation >= 365, drop=True)
@@ -21,7 +21,7 @@ def find_longterm_median_v(ds):
     med_v = ds_long.v.median(dim=['x','y','time_numeric']).data
     return med_v, ds_long
 
-# %% ../nbs/04_Data_inspection.ipynb 40
+# %% ../nbs/04_Data_inspection.ipynb 32
 def calc_min_tbaseline(ds):
 
     med_v = find_longterm_median_v(ds)[0]
@@ -42,7 +42,7 @@ def calc_min_tbaseline(ds):
     df = pd.DataFrame(min_tb_dict)
     return df
 
-# %% ../nbs/04_Data_inspection.ipynb 43
+# %% ../nbs/04_Data_inspection.ipynb 35
 def trim_by_baseline(ds):
 
     min_tb_df = calc_min_tbaseline(ds)

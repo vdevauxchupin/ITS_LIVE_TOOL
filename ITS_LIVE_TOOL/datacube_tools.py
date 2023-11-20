@@ -333,7 +333,7 @@ class DATACUBETOOLS:
         return
 
     def get_subcube_around_point(
-        self, point_xy, point_epsg_str, half_distance=5000.0, variables=["v"]
+        self, point_xy, point_epsg_str, half_distance=1000.0, variables=["v"]
     ):
         """pulls subset of cube within half_distance of point (unless edge of cube is included) containing specified variables:
         - calls find_datacube to determine which S3-based datacube the point is in,

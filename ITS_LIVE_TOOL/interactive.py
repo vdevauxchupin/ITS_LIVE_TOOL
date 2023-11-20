@@ -34,7 +34,7 @@ from requests import Request
 import urllib.request, json 
 
 
-# %% ../nbs/02_interactive.ipynb 6
+# %% ../nbs/02_interactive.ipynb 5
 class Widget():
     '''this is an interactive map widget to streamline access itslive data. 
     left and right click for rgi info about a selected location and corresponding url 
@@ -157,7 +157,7 @@ class Widget():
     def display(self):
         return VBox([self.map, self.coordinates_label, self.coordinates_output])
 
-# %% ../nbs/02_interactive.ipynb 8
+# %% ../nbs/02_interactive.ipynb 6
 class Widget():
     '''this is an interactive map widget to streamline access itslive data. 
     left and right click for rgi info about a selected location and corresponding url 
@@ -283,7 +283,7 @@ class Widget():
     def display(self):
         return VBox([self.map, self.coordinates_label, self.coordinates_output])
 
-# %% ../nbs/02_interactive.ipynb 22
+# %% ../nbs/02_interactive.ipynb 19
 def create_multiple_glacier_objs(w_obj):
     '''wrapper function to create multiple objects from multiple clicks
     '''
@@ -297,7 +297,7 @@ def create_multiple_glacier_objs(w_obj):
     return glacier_ls
     #glacier0, glacier1 = glacier_ls[0], glacier_ls[1]
 
-# %% ../nbs/02_interactive.ipynb 28
+# %% ../nbs/02_interactive.ipynb 25
 def create_multiple_glacier_point_objs(w_obj):
     '''wrapper function to create multiple glacier point objects from multiple clicks
     '''
@@ -314,7 +314,7 @@ def create_multiple_glacier_point_objs(w_obj):
     return glacier_pt_ls
    # glacier_pt0, glacier_pt1 = glacier_pt_ls[0], glacier_pt_ls[1]
 
-# %% ../nbs/02_interactive.ipynb 29
+# %% ../nbs/02_interactive.ipynb 26
 def create_multiple_glacier_centerline_objs(w_obj):
     '''wrapper  function to create multiple glacier centerline objects from multiple clicks 
     '''

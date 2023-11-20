@@ -15,7 +15,7 @@ well as various methods to process ITS_LIVE observations.
 
 Eventually, we hope to have a pip install. For now, install via:
 
-`pip install pip+https://github.com/vdevauxchupin/ITS_LIVE_TOOL`
+`pip install git+https://github.com/vdevauxchupin/ITS_LIVE_TOOL`
 
 # Overview
  

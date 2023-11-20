@@ -115,7 +115,7 @@ def drop_empty_timesteps(ds):
     ds = ds.dropna(how='all', dim='time_numeric', subset='v')
     return ds
 
-# %% ../nbs/03_obj_setup.ipynb 10
+# %% ../nbs/03_obj_setup.ipynb 8
 class Glacier_Centerline():
     '''class to hold all data associated with a centerline'''
     def __init__(self, name, rgi_id):
@@ -245,7 +245,7 @@ class Glacier_Centerline():
         
         
 
-# %% ../nbs/03_obj_setup.ipynb 11
+# %% ../nbs/03_obj_setup.ipynb 9
 class Glacier():
     '''class to hold all data associated with individual glacier
     inputs: name (str), rgi_id (str), and how the object was created (either from the map widget or manually)
@@ -306,7 +306,7 @@ class Glacier():
             
             return data_glacier
 
-# %% ../nbs/03_obj_setup.ipynb 12
+# %% ../nbs/03_obj_setup.ipynb 10
 class Glacier_Point():
     '''class to hold all data associated with individual points on a glacier
     inputs: name (str), label of point, rgi id (str), point coordinates in latlon (list)
@@ -323,9 +323,9 @@ class Glacier_Point():
         self.point_latlon = point_coords_latlon
         self.point_gdf = self.point_to_gdf()
         #self.utm_crs = str(self.point_gdf.estimate_utm_crs())
-        self.datacube_point = drop_empty_timesteps(self._add_image_pair_point())
+        #self.datacube_point = drop_empty_timesteps(self._add_image_pair_point())
         self.datacube_sub = drop_empty_timesteps(self._add_image_pair_subcube())
-        self.utm_crs = str(self.datacube_point.rio.crs)
+        self.utm_crs = str(self.datacube_sub.rio.crs)
         #self.padded_centerline_subcube = self._extract_subcube_along_padded_centerline()
         self.cube_around_point = drop_empty_timesteps(self._extract_3x3_cube_around_point())
 
@@ -412,7 +412,7 @@ class Glacier_Point():
 
    
 
-# %% ../nbs/03_obj_setup.ipynb 18
+# %% ../nbs/03_obj_setup.ipynb 16
 def create_glacier_from_click(w_obj, i):
     '''this function takes clicked information (from a single click, not all clicked points) and returns a `Glacier` type object
     '''
@@ -429,7 +429,7 @@ def create_glacier_from_click(w_obj, i):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 19
+# %% ../nbs/03_obj_setup.ipynb 17
 def create_glacier_point_from_click(w_obj, i, label):
     #var_ls = ['v','vy','vx','v_error','mapping','satellite_img1','satellite_img2','acquisition_date_img1', 'acquisition_date_img2']
 
@@ -441,7 +441,7 @@ def create_glacier_point_from_click(w_obj, i, label):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 20
+# %% ../nbs/03_obj_setup.ipynb 18
 def create_glacier_centerline_from_click(w_obj, i):
 
     if len(w_obj.added_glaciers) > 0:
@@ -452,7 +452,7 @@ def create_glacier_centerline_from_click(w_obj, i):
     else: 
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 21
+# %% ../nbs/03_obj_setup.ipynb 19
 def create_multiple_glacier_objs(w_obj):
     glacier_ls = []
     
@@ -468,7 +468,7 @@ def create_multiple_glacier_objs(w_obj):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 22
+# %% ../nbs/03_obj_setup.ipynb 20
 def create_multiple_glacier_point_objs(w_obj):
 
     if len(w_obj.added_glaciers) > 0:
@@ -487,7 +487,7 @@ def create_multiple_glacier_point_objs(w_obj):
         print('No selection made')
    # glacier_pt0, glacier_pt1 = glacier_pt_ls[0], glacier_pt_ls[1]
 
-# %% ../nbs/03_obj_setup.ipynb 23
+# %% ../nbs/03_obj_setup.ipynb 21
 def create_multiple_glacier_centerline_objs(w_obj):
     if len(w_obj.added_glaciers) > 0:
         
@@ -503,7 +503,7 @@ def create_multiple_glacier_centerline_objs(w_obj):
     else:
         print('No selection made')
 
-# %% ../nbs/03_obj_setup.ipynb 29
+# %% ../nbs/03_obj_setup.ipynb 28
 def return_clicked_info(clicked_widget):
 
     '''this function formats information from a user click on the Widget object. 

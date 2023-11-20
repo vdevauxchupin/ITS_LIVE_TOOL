@@ -23,7 +23,7 @@ from ipyleaflet import WMSLayer
 import ipywidgets as ipyw
 import json
 import pandas as pd
-from ipyleaflet import Map, WMSLayer, basemaps, GeoData
+from ipyleaflet import Map, WMSLayer, basemaps, GeoData, AwesomeIcon, Marker
 from ipywidgets import HTML
 from owslib.wms import WebMapService
 import ipywidgets as widgets
@@ -58,6 +58,12 @@ class Widget():
         self.urls = []
         self.added_coords = []
         self.added_urls = []
+        self.geo_data = []
+        self.colors = ['red', 'green', 'blue', 'purple', 'gray', 'orange', 'beige']
+        self.colors_iterator = 0
+        self.point_iterator = 0
+        self.markers = []
+        self.button = None
 
     def make_map(self):
         
@@ -65,7 +71,13 @@ class Widget():
         label = ipyw.Label(layout=ipyw.Layout(width="100%"))
         map.scroll_wheel_zoom = True
         return map, label
-        
+
+    def remove_point(self, *args, **kwargs):
+        if self.markers:  # Check if there are markers
+            self.map.remove_layer(self.markers[-1])  # Remove the marker from the map
+            self.markers = self.markers[:-1]
+            self.added_coords = self.added_coords[:-1]
+            
     def _make_wms_layer(self):
 
         wms_layer = WMSLayer(
@@ -103,15 +115,23 @@ class Widget():
     def _json_handler(self, event=None, feature=None, id=None, properties=None):
         zarr_url = properties.get("zarr_url", "N/A")
         self.urls.append(zarr_url)
+        self.urls = list(np.unique(self.urls))
         print(f"Clicked URL: {zarr_url}")
         print("All Clicked URLs:", self.urls)
 
-        #self.added_urls.append(urls)
 
     def click_handler(self, properties=None, **kwargs):
         
         if kwargs.get('type') == 'contextmenu':
+            icon = AwesomeIcon(name='fa-cog', marker_color = self.colors[self.point_iterator])
+            self.point_iterator += 1
+            self.colors_iterator += 1
+            if self.colors_iterator > len(self.colors)-1:
+                self.colors_iterator = 0
             latlon = kwargs.get('coordinates')
+            marker = Marker(location=latlon, icon=icon, draggable = False)
+            self.map.add_layer(marker)
+            self.markers.append(marker)
             lat, lon = latlon[0], latlon[1]
             print(f"Clicked at (Lat: {lat}, Lon: {lon})")
             self.added_coords.append([lat, lon])
@@ -134,18 +154,19 @@ class Widget():
                     print(f"You have selected the glacier {df['NAME'].values[0]}, ID: {df['id'].values[0]} ")
             except:
                     print(f"This glacier is not recognized by the RGI (maybe an ice-shelf ?) -> Choose another one")
-            
+                
             geo_data = GeoData(geo_dataframe = df,
-                        style={'color': 'black', 'fillColor': '#3366cc', 'opacity':0.05, 'weight':1.9, 'dashArray':'2', 'fillOpacity':0.6},
-                        hover_style={'fillColor': 'blue' , 'fillOpacity': 0.2},
-                        name = 'Glacier')
-
-            self.map.add_layer(geo_data) #add glacier highlight to map
-
+                                   style={'color':'black', 'fillColor':'#3366cc','opacity':0.05, 'weight':1.9, 'dashArray':'2', 'fillOpacity':0.6},
+                                   hover_style={'fillColor':'blue','fillOpacity':0.2},
+                                   name = 'Glacier')
+            if geo_data not in self.geo_data:
+                self.geo_data.append(geo_data)
+                self.map.add_layer(geo_data) 
+            #print(len(self.added_glacier))
             #return gdf_list
             
-    #def update_coordinates_label(self):
-        #self.coordinates_label.value = "Clicked Coordinates: " + str(self.coordinates)
+    def update_coordinates_label(self):
+        self.coordinates_label.value = "Clicked Coordinates: " + str(self.coordinates)
 
     def clear_coordinates(self, b):
         self.coordinates = []
@@ -153,5 +174,10 @@ class Widget():
         
     def get_coordinates(self):
         return self.coordinates
+        
     def display(self):
-        return VBox([self.map, self.coordinates_label, self.coordinates_output])
+        # Create a button for removing points
+        self.button = ipyw.Button(description="Remove latest point")
+        self.button.on_click(self.remove_point)
+        return VBox([self.map, self.coordinates_label, self.coordinates_output, self.button])
+

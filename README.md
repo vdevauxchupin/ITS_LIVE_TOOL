@@ -58,9 +58,6 @@ methods.
 
 Pre-processing methods for inspecting and removing outliers from ITS_LIVE time series. Temporal baseline threshold methods focus specifically on cases where movement of slower glaciers may be near or below the noise threshold of the imaging sensors and feature tracking algorithms. These methods aim to determine a minimum temporal baseline threshold appropriate for a given dataset. 
 
-### Gaussian Process
-**to add** description 
-
 ### Inversion
 
 **to add** Description – link to full description and examples
@@ -74,7 +71,7 @@ For a detailed, code-based walk through of ITS_LIVE_TOOL functionality, check ou
 
 ## Contact
 
-### Glacier objects, Gaussian Process
+### Glacier objects, Data filtering
 - emma.marshall@utah.edu
   
 ### Inversion, GUI
@@ -99,7 +96,7 @@ DOI: [10.5194/gmd-12-909-2019](url)
 RGI 7.0 Consortium, 2023. Randolph Glacier Inventory - A Dataset of Global Glacier Outlines, Version 7.0. Boulder, Colorado USA. NSIDC: National Snow and Ice Data Center. doi:10.5067/f6jmovy5navz. Online access: [https://doi.org/10.5067/f6jmovy5navz](url)
 
 ### Methods 
-- cite gaussian process, temporal inversion literature here?
+- cite temporal inversion, other literature here?
 ### Software
 - packages used
 

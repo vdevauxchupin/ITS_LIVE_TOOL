@@ -6,6 +6,8 @@ add figures, images of processed data, data access gifs etc. to readme
 
 # About
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/vdevauxchupin/ITS_LIVE_TOOL/main?urlpath=lab/tree/)
+
 `ITS_LIVE_TOOL` is a package designed to aid users working with the
 [Inter-mission Time Series of Land Ice Velocity and Elevation](link)
 (ITS_LIVE) dataset. The package provides functions for accessing data as

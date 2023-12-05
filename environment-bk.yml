@@ -1,4 +1,4 @@
-name: itslivetools_env
+name: new_itslivetools_env
 channels:
   - fastai
   - pyviz

@@ -33,7 +33,8 @@ dependencies = [
     "torch",
     "tqdm",
     "xarray",
-    "zarr",      
+    "zarr",
+    "eofs",
 ]
 
 [tool.setuptools.package-dir]

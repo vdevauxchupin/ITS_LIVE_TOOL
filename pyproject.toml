@@ -1,0 +1,44 @@
+build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ITS_LIVE_TOOL"
+version = "0.1.0"
+description = "Access, treatment and analysis of glacier surface velocities"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE.txt"}
+authors = [
+    {name = "Victor Devaux-Chupin"},
+    {email = "vdevauxchupin@alaska.edu"}
+]
+dependencies = [
+    "beautifulsoup4",
+    "dask",
+    "geopandas",
+    "ipyleaflet",
+    "ipywidgets",
+    "matplotlib",
+    "numpy",
+    "OWSLib",
+    "pandas",
+    "pyproj",
+    "Requests",
+    "rioxarray",
+    "s3fs",
+    "scikit_learn",
+    "scipy",
+    "Shapely",
+    "torch",
+    "tqdm",
+    "xarray",
+    "zarr",      
+]
+
+[tool.setuptools.package-dir]
+ITS_LIVE_TOOL = "ITS_LIVE_TOOL"
+
+[project.urls]
+homepage = "https://github.com/vdevauxchupin/ITS_LIVE_TOOL/"
+repository = "https://github.com/vdevauxchupin/ITS_LIVE_TOOL/"

@@ -489,7 +489,7 @@ def extend_Matrices(reg_mat_time, nb_pts_tot, reg_mat_space, spatial_regularizat
     return vxInv, vyInv, len_pt_inverted, SRT, SRS, space_reg_mat, time_reg_mat
 
 # Function to run the inversion for each point and organize the data in the host arrays
-def looper(i, vxInv, vyInv, GPU, spatial_regularization, nb_pts_tot, time_reg_mat, space_reg_mat, len_pt_inverted, data_dict, urls, P, neighbor_idx, x_matches, y_matches, X_arr, X_MIN, X_MAX, Y_arr, Y_MIN, Y_MAX, device, dates_nonum, x_indices_centerline, y_indices_centerline, SRT, SRS):
+def looper(i, name_cube, vxInv, vyInv, GPU, spatial_regularization, nb_pts_tot, time_reg_mat, space_reg_mat, len_pt_inverted, data_dict, urls, P, neighbor_idx, x_matches, y_matches, X_arr, X_MIN, X_MAX, Y_arr, Y_MIN, Y_MAX, device, dates_nonum, x_indices_centerline, y_indices_centerline, SRT, SRS):
 
     
     # Get all the points used in the inversion. 1st point is the one we are inverting for
@@ -556,27 +556,34 @@ def looper(i, vxInv, vyInv, GPU, spatial_regularization, nb_pts_tot, time_reg_ma
     # Save the matrices along-the-way in case the algorithm fails
     if i%10000 == 0 and i != 0:
 
-        print(f"Saved at {i}")
-        
-        # Get the names of all the glaciers in the datacube 
+        # Create output folder
+        path_save = "Datacubes"
+        os.makedirs(path_save, exist_ok=True)
+    
+        # Gather the data in a dataset
         new_ds = xr.Dataset(
-            {
-                "vx": (["time", "y", "x"], vxInv.cpu().numpy()),
-                "vy": (["time", "y", "x"], vyInv.cpu().numpy())
-            },
-            coords={
-                "time": dates_nonum,
-                "x": X_arr[X_MIN:X_MAX],
-                "y": Y_arr[Y_MIN:Y_MAX]
-            },
-            attrs=data_dict[urls[0]]['zarr_store'].attrs,
+        {
+            "vx": (["time", "y", "x"], vxInv),
+            "vy": (["time", "y", "x"], vyInv),
+        },
+        coords={
+            "time": dates_nonum,
+            "x": X_arr[X_MIN:X_MAX],
+            "y": Y_arr[Y_MIN:Y_MAX]
+        },
+        attrs=data_dict[urls[0]]['zarr_store'].attrs,
         ).chunk({'time': 1, 'x': 100, 'y': 100})
-
+    
+        # Add the coordinates of the centerline
+        new_ds['x_coords_centerline'] = ('point', x_indices_centerline)
+        new_ds['y_coords_centerline'] = ('point', y_indices_centerline)
+    
         from dask.diagnostics import ProgressBar
-        write_job = new_ds.to_netcdf(f'Cube.nc', compute=False)
+        save_data = new_ds.to_netcdf(f"{path_save}/{name_cube}.nc", mode='w', compute = False) 
         with ProgressBar():
-            print(f"Writing to {'Cube.nc'}")
-            write_job.compute()
+            print(f"Writing to {path_save}")
+            save_data.compute()
+            
     return vxInv, vyInv
             
 # Function to invert a point's velocities           
@@ -615,7 +622,7 @@ def save_dataset(name_cube, vxInv, vyInv, dates_nonum, X_arr, Y_arr, X_MIN, X_MA
     plt.scatter(dates_nonum, np.nanmean(np.nanmean(mag, axis = 2), axis = 1))
 
     # Create output folder
-    path_save = f"Datacubes/{name_cube}"
+    path_save = "Datacubes"
     os.makedirs(path_save, exist_ok=True)
 
     # Gather the data in a dataset

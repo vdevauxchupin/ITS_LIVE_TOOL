@@ -23,7 +23,7 @@ Eventually, we hope to have a pip install. For now, install via:
 
 The illustration below provides a high-level overview of the main object classes in `ITS_LIVE_TOOL`
 
-[overview](figs/ITS_LIVE_TOOL_diagram.png)
+![overview](figs/ITS_LIVE_TOOL_diagram.png)
 
  
 ## Data Access + Organization

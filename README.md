@@ -20,23 +20,26 @@ Eventually, we hope to have a pip install. For now, install via:
 `pip install git+https://github.com/vdevauxchupin/ITS_LIVE_TOOL`
 
 # Overview
+
+The illustration below provides a high-level overview of the main object classes in `ITS_LIVE_TOOL`
+
+![overview](figs/ITS_LIVE_TOOL_diagram.png)
+
  
 ## Data Access + Organization
 
 We implement 3 object classes to store ITS_LIVE velocity data and auxiliary information with the goal of making it efficient and intuitive to keep track of and scale your analysis of ITS_LIVE data. 
 
-The illustration below provides a high-level overview of the main object classes in `ITS_LIVE_TOOL`
-
-```{note}still need to decide on final figure for this?
-```
-[illustration will go here ? ]()
-
-
 ### Interactive Widget
 
 This is an interactive map widget designed to streamline access to ITS_LIVE image pair velocity datasets and creation of `ITS_LIVE_TOOL` objects. To see an example of the interactive widget, check out `interactive.ipynb`. Use the widget in your workflow by importing the `interactive` module.
 
+### Programmatic Access
+
+You can also access data by specifying a RGI ID and point coordinates. 
+
 ### `Glacier`, `Glacier_Centerline`, `Glacier_Point` objects
+
 ```{note}
 once we have rendered docs, link add hyper links for these objects
 ```
@@ -58,7 +61,7 @@ methods.
 
 ### Data filtering 
 
-Pre-processing methods for inspecting and removing outliers from ITS_LIVE time series. Temporal baseline threshold methods focus specifically on cases where movement of slower glaciers may be near or below the noise threshold of the imaging sensors and feature tracking algorithms. These methods aim to determine a minimum temporal baseline threshold appropriate for a given dataset. 
+Pre-processing methods for inspecting and removing outliers from ITS_LIVE time series. Temporal baseline threshold methods focus specifically on cases where the movement of slower glaciers may be near or below the noise threshold of the imaging sensors and feature tracking algorithms. These methods aim to determine a minimum temporal baseline threshold appropriate for a given dataset. 
 
 ### Inversion
 

@@ -35,6 +35,8 @@ dependencies = [
     "xarray",
     "zarr",
     "eofs",
+    "numpy",
+    "jupyterlab"
 ]
 
 [tool.setuptools.package-dir]

@@ -37,7 +37,7 @@ dependencies = [
     "xarray",
     "zarr",
     "eofs",
-    "numpy"
+    "numpy",
     "jupyterlab"
 ]
 

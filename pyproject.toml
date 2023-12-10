@@ -38,7 +38,7 @@ dependencies = [
     "zarr",
     "eofs",
     "numpy"
-    "jupyter-lab"
+    "jupyterlab"
 ]
 
 [tool.setuptools.package-dir]

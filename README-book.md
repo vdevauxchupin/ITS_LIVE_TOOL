@@ -1,7 +1,9 @@
-# ITS_LIVE_TOOL 
+# Intro
+
+This Jupyter Book accompanies the ITS_LIVE_TOOL package. It is intended to be a companion to the pacakge with additional explanatory text surrounding methods and scripts. 
 
 ```{note}
-add figures, images of processed data, data access gifs etc. to readme 
+This book is *in progress*, we're working on it as quickly as we can!
 ```
 
 # About

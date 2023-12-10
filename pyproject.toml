@@ -11,7 +11,9 @@ requires-python = ">=3.8"
 license = {file = "LICENSE.txt"}
 authors = [
     {name = "Victor Devaux-Chupin"},
-    {email = "vdevauxchupin@alaska.edu"}
+    {email = "vdevauxchupin@alaska.edu"},
+    {name = "Emma Marshall"},
+    {email = "emma.marshall@utah.edu"}
 ]
 dependencies = [
     "beautifulsoup4",
@@ -35,6 +37,8 @@ dependencies = [
     "xarray",
     "zarr",
     "eofs",
+    "numpy"
+    "jupyter-lab"
 ]
 
 [tool.setuptools.package-dir]

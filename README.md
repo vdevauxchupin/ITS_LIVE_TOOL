@@ -1,8 +1,5 @@
 # ITS_LIVE_TOOL 
 
-```{note}
-add figures, images of processed data, data access gifs etc. to readme 
-```
 
 # About
 
@@ -15,9 +12,16 @@ well as various methods to process ITS_LIVE observations.
 
 # Installation 
 
-Eventually, we hope to have a pip install. For now, install via:
+Eventually, we hope to have a pip install. For now, install via the following steps:
 
-`pip install git+https://github.com/vdevauxchupin/ITS_LIVE_TOOL`
+1. Clone github repo:
+ - `git clone https://github.com/vdevauxchupin/ITS_LIVE_TOOL.git`
+2. Create fresh conda environment (recommended), name the environment anything as you'd like:
+   `conda create --name toy_env python=3.8`
+3. Activate environment:
+   `conda activate toy_env`
+4. Install required packages:
+ `pip install git+https://github.com/vdevauxchupin/ITS_LIVE_TOOL`
 
 # Overview
 

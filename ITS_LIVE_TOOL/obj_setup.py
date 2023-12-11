@@ -130,7 +130,7 @@ class Glacier_Centerline():
         '''function to download oggm centerlines by rgi region. 
         destination folder is a 'centerlines dir in the root folder
         ''' 
-        os.makedirs(dest_folder.split('nbs')[0]+'centerlines', exist_ok=True)
+        os.makedirs(dest_folder.split('nbs')[0]+'/centerlines', exist_ok=True)
         dest_folder = dest_folder.split('nbs')[0]+'centerlines/'
     
         #this first part of htis function is scraping the urls for OGGM centerlines for each RGI region from the summary page

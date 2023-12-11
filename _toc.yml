@@ -1,0 +1,10 @@
+ # Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: README-book
+chapters:
+- file: index.html
+- file: roadmap.ipynb
+- file: fast_roadmap.ipynb
+- file: nbs/05_preprocess.ipynb

@@ -110,10 +110,6 @@ class DATACUBETOOLS:
                 )
                 point_cubexy = inPROJtoTilePROJ.transform(*point_xy)
 
-            print(
-                f"original xy {point_xy} {point_epsg_str} maps to datacube {point_cubexy} "
-                f"EPSG:{cubefeature['properties']['epsg']}"
-            )
 
             # now test if point is in xy box for cube (should be most of the time; could fail
             # because of boundary curvature 4326 box defined by lon,lat corners but point needs to be in box defined in cube's projection)
@@ -169,7 +165,7 @@ class DATACUBETOOLS:
                 # now reproject this point to lat lon and look for new feature
                 if "data_epsg" in cubefeature["properties"]:
                     epsg_source = cubefeature["properties"]["data_epsg"]
-                elif "projection" in cubefeaturea["properties"]:
+                elif "projection" in cubefeature["properties"]:
                     epsg_source = cubefeature["properties"]["projection"]
                 else:
                     epsg_source = None
@@ -327,7 +323,7 @@ class DATACUBETOOLS:
         return
 
     def get_subcube_around_point(
-        self, point_xy, point_epsg_str, half_distance=1000.0, variables=["v"]
+        self, point_xy, point_epsg_str, half_distance=5000.0, variables=["v"]
     ):
         """pulls subset of cube within half_distance of point (unless edge of cube is included) containing specified variables:
         - calls find_datacube to determine which S3-based datacube the point is in,
@@ -423,7 +419,7 @@ class DATACUBETOOLS:
             bbox_centrer_point_xy, bbox_epsg_str
         )
 
-        if cube_feature["properties"]["data_epsg"].split(":")[-1] != bbox_epsg_str:
+        if str(cube_feature["properties"]["epsg"]) != bbox_epsg_str:
             print(
                 f'bbox is in epsg:{bbox_epsg_str}, should be in datacube {cube_feature["properties"]["data_epsg"]}'
             )
@@ -460,9 +456,12 @@ class DATACUBETOOLS:
             ]
             .load()
         )
-        print(f"subset and load at {time.time() - start:6.2f} seconds", flush=True)
+        #print(f"subset and load at {time.time() - start:6.2f} seconds", flush=True)
 
         # now fix the CF compliant geolocation/mapping of the smaller cube
         self.set_mapping_for_small_cube_from_larger_one(small_ins3xr, ins3xr)
+        
+        # Flip the y axis of the small cube
+        small_ins3xr = small_ins3xr.isel(y=slice(None, None, -1))  # IMPORTANT INFORMATION: when we create the template and corners coordinates, we have to flip the y-axis of the template to respect the geographical setting (Y_origin lower left, while on Python Y_origin is upper left)
 
         return (ins3xr, small_ins3xr, bbox_centrer_point_cubexy)

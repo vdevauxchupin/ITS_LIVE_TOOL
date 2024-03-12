@@ -227,6 +227,10 @@ class Widget():
                         self.map.add_layer(geo_data) 
                     #print(len(self.added_glacier))
                     #return gdf_list
+                    
+                else:
+                    print('Could not retrieve RGI bounds. Ignore if working on ice-sheet or ice-shelf')
+                    
             
     def handle_draw(self, action, geo_json):
         polygon = []
